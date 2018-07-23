@@ -22,29 +22,19 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __GAME_SCENE_H__
-#define __GAME_SCENE_H__
+#ifndef __FISH_H__
+#define __FISH_H__
 
 #include "cocos2d.h"
 
-class Game : public cocos2d::Scene
+class Fish
 {
 public:
-    static cocos2d::Scene* createScene();
 
-    virtual bool init();
-    
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
-	void InitialSetup();
+	cocos2d::Sprite* sprite;
 
-	void update(float) override;
-	
-	cocos2d::Label* label;
-	int counter;
-
-    // implement the "static create()" method manually
-    CREATE_FUNC(Game);
+	Fish(cocos2d::Scene* scene);
+ 
 };
 
 #endif // __HELLOWORLD_SCENE_H__

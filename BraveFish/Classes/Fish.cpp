@@ -22,29 +22,33 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __GAME_SCENE_H__
-#define __GAME_SCENE_H__
+#include "Fish.h"
+#include "SimpleAudioEngine.h"
 
-#include "cocos2d.h"
 
-class Game : public cocos2d::Scene
-{
-public:
-    static cocos2d::Scene* createScene();
+USING_NS_CC;
 
-    virtual bool init();
-    
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
-	void InitialSetup();
+Sprite* sprite;
 
-	void update(float) override;
-	
-	cocos2d::Label* label;
-	int counter;
+Fish::Fish(Scene* scene) {
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-    // implement the "static create()" method manually
-    CREATE_FUNC(Game);
-};
+	sprite = Sprite::create("fish.png");
+	if (sprite == nullptr)
+	{
+		//
+	}
+	else
+	{
+		// position the sprite on the center of the screen
+		sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 
-#endif // __HELLOWORLD_SCENE_H__
+		// add the sprite as a child to this layer
+		scene->addChild(sprite, 0);
+	}
+}
+
+
+
+
