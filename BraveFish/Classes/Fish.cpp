@@ -22,13 +22,21 @@
  THE SOFTWARE.
  ****************************************************************************/
 
+#define FISH_SCALE 0.1
+#define FISH_TURN_RATE 3
+
 #include "Fish.h"
 #include "SimpleAudioEngine.h"
+
+#define SSTR( x ) static_cast< std::ostringstream & >( \
+        ( std::ostringstream() << std::dec << x ) ).str()
 
 
 USING_NS_CC;
 
 Sprite* sprite;
+float currentRotation;
+int n;
 
 Fish::Fish(Scene* scene) {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -41,12 +49,24 @@ Fish::Fish(Scene* scene) {
 	}
 	else
 	{
-		// position the sprite on the center of the screen
+
+		sprite->setScale(FISH_SCALE);
+
 		sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 
 		// add the sprite as a child to this layer
 		scene->addChild(sprite, 0);
 	}
+	currentRotation = 0;
+}
+
+void Fish::Turn() {
+
+
+	n++;
+	currentRotation += FISH_TURN_RATE;
+	sprite->setRotation(currentRotation);
+
 }
 
 

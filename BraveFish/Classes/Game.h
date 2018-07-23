@@ -26,6 +26,7 @@
 #define __GAME_SCENE_H__
 
 #include "cocos2d.h"
+#include "Fish.h"
 
 class Game : public cocos2d::Scene
 {
@@ -42,6 +43,7 @@ public:
 	
 	cocos2d::Label* label;
 	int counter;
+	Fish* fish;
 
     // implement the "static create()" method manually
     CREATE_FUNC(Game);

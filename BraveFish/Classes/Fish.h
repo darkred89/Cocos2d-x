@@ -32,9 +32,13 @@ class Fish
 public:
 
 	cocos2d::Sprite* sprite;
-
 	Fish(cocos2d::Scene* scene);
- 
+	
+	float currentRotation;
+
+	int n;
+
+	void Turn();
 };
 
 #endif // __HELLOWORLD_SCENE_H__

@@ -23,14 +23,13 @@
  ****************************************************************************/
 
 #include "Game.h"
-#include "Fish.h"
 #include "SimpleAudioEngine.h"
 
-//#include <sstream>
-//
-//#define SSTR( x ) static_cast< std::ostringstream & >( \
-//        ( std::ostringstream() << std::dec << x ) ).str()
-//
+#include <sstream>
+
+#define SSTR( x ) static_cast< std::ostringstream & >( \
+        ( std::ostringstream() << std::dec << x ) ).str()
+
 USING_NS_CC;
 
 Scene* Game::createScene()
@@ -40,6 +39,7 @@ Scene* Game::createScene()
 
 Label label;
 int counter=0;
+Fish* fish = NULL;
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
@@ -60,7 +60,7 @@ bool Game::init()
 
 	InitialSetup();
 
-	Fish* fish = new Fish(this);
+	fish = new Fish(this);
 
 	this->scheduleUpdate();
 
@@ -151,12 +151,12 @@ void Game::update(float delta)
 	//test update
 	
 	counter++;
-	//int i = 42;
-	//std::string s = SSTR("Frames passed: " << counter);
+	int i = 42;
+	std::string s = SSTR("Frames passed: " << counter);
 
-	label->setString("test");
+	label->setString(s);
 	
-
+	fish->Turn();
 }
 
 void Game::menuCloseCallback(Ref* pSender)
