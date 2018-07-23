@@ -21,6 +21,8 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
+#define TARGET_SCALE 0.15
+
 
 #include "Game.h"
 #include "SimpleAudioEngine.h"
@@ -34,12 +36,18 @@ USING_NS_CC;
 
 Scene* Game::createScene()
 {
-    return Game::create();
+	auto scene = Scene::create();
+	auto layer = Game::create();
+	scene->addChild(layer);
+
+    return scene;
 }
 
 Label label;
 int counter=0;
 Fish* fish = NULL;
+Sprite target;
+
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
@@ -63,6 +71,15 @@ bool Game::init()
 	fish = new Fish(this);
 
 	this->scheduleUpdate();
+
+	auto touchListener = EventListenerTouchOneByOne::create();
+
+	touchListener->onTouchBegan = CC_CALLBACK_2(Game::onTouchBegan, this);
+	touchListener->onTouchEnded = CC_CALLBACK_2(Game::onTouchEnded, this);
+	touchListener->onTouchMoved = CC_CALLBACK_2(Game::onTouchMoved, this);
+	touchListener->onTouchCancelled = CC_CALLBACK_2(Game::onTouchCancelled, this);
+
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
     return true;
 }
@@ -142,6 +159,21 @@ void Game::InitialSetup() {
 		this->addChild(sprite, 0);
 	}
 
+	target = Sprite::create("bubble.png");
+	if (target == nullptr)
+	{
+		problemLoading("'bubble.png'");
+	}
+	else
+	{
+		// position the sprite on the center of the screen
+		target->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+		target->setScale(0.15);
+		// add the sprite as a child to this layer
+		this->addChild(target, 0);
+	}
+
+
 	label->setString("rrr");
 
 }
@@ -157,6 +189,29 @@ void Game::update(float delta)
 	label->setString(s);
 	
 	fish->Turn();
+
+	target->setScale(TARGET_SCALE*(1-sin(0.99*counter/10))/4 + TARGET_SCALE);
+}
+
+bool Game::onTouchBegan(Touch* touch, Event* event)
+{
+	target->setPosition(touch->getLocation());
+	return true;
+}
+
+void Game::onTouchEnded(Touch* touch, Event* event)
+{
+	cocos2d::log("touch ended");
+}
+
+void Game::onTouchMoved(Touch* touch, Event* event)
+{
+	cocos2d::log("touch moved");
+}
+
+void Game::onTouchCancelled(Touch* touch, Event* event)
+{
+	cocos2d::log("touch cancelled");
 }
 
 void Game::menuCloseCallback(Ref* pSender)

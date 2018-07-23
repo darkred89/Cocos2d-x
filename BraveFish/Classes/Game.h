@@ -25,7 +25,10 @@
 #ifndef __GAME_SCENE_H__
 #define __GAME_SCENE_H__
 
+#pragma once
+
 #include "cocos2d.h"
+
 #include "Fish.h"
 
 class Game : public cocos2d::Scene
@@ -44,6 +47,14 @@ public:
 	cocos2d::Label* label;
 	int counter;
 	Fish* fish;
+	cocos2d::Sprite* target;
+
+
+	virtual bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*);
+	virtual void onTouchEnded(cocos2d::Touch*, cocos2d::Event*);
+	virtual void onTouchMoved(cocos2d::Touch*, cocos2d::Event*);
+	virtual void onTouchCancelled(cocos2d::Touch*, cocos2d::Event*);
+
 
     // implement the "static create()" method manually
     CREATE_FUNC(Game);
