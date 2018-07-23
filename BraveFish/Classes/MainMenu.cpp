@@ -24,7 +24,6 @@
 
 #include "MainMenu.h"
 #include "SimpleAudioEngine.h"
-#include "Game.h"
 
 USING_NS_CC;
 
@@ -53,101 +52,72 @@ bool MainMenu::init()
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	MenuSetup();
+    /////////////////////////////
+    // 2. add a menu item with "X" image, which is clicked to quit the program
+    //    you may modify it.
 
+    // add a "close" icon to exit the progress. it's an autorelease object
+    auto closeItem = MenuItemImage::create(
+                                           "CloseNormal.png",
+                                           "CloseSelected.png",
+                                           CC_CALLBACK_1(HelloWorld::menuCloseCallback, this));
+
+    if (closeItem == nullptr ||
+        closeItem->getContentSize().width <= 0 ||
+        closeItem->getContentSize().height <= 0)
+    {
+        problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
+    }
+    else
+    {
+        float x = origin.x + visibleSize.width - closeItem->getContentSize().width/2;
+        float y = origin.y + closeItem->getContentSize().height/2;
+        closeItem->setPosition(Vec2(x,y));
+    }
+
+    // create menu, it's an autorelease object
+    auto menu = Menu::create(closeItem, NULL);
+    menu->setPosition(Vec2::ZERO);
+    this->addChild(menu, 1);
+
+    /////////////////////////////
+    // 3. add your codes below...
+
+    // add a label shows "Hello World"
+    // create and initialize a label
+
+    auto label = Label::createWithTTF("Hello World", "fonts/Marker Felt.ttf", 24);
+    if (label == nullptr)
+    {
+        problemLoading("'fonts/Marker Felt.ttf'");
+    }
+    else
+    {
+        // position the label on the center of the screen
+        label->setPosition(Vec2(origin.x + visibleSize.width/2,
+                                origin.y + visibleSize.height - label->getContentSize().height));
+
+        // add the label as a child to this layer
+        this->addChild(label, 1);
+    }
+
+    // add "HelloWorld" splash screen"
+    auto sprite = Sprite::create("HelloWorld.png");
+    if (sprite == nullptr)
+    {
+        problemLoading("'HelloWorld.png'");
+    }
+    else
+    {
+        // position the sprite on the center of the screen
+        sprite->setPosition(Vec2(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+
+        // add the sprite as a child to this layer
+        this->addChild(sprite, 0);
+    }
     return true;
 }
 
-void MainMenu::MenuSetup() {
-	auto director = cocos2d::Director::getInstance();
-	auto width = cocos2d::Size(director->getOpenGLView()->getFrameSize()).width;
-	auto height = cocos2d::Size(director->getOpenGLView()->getFrameSize()).height;
-
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
-	float scaleMultilier = width / 960;
-	////CloseButton
-	auto closeItem = MenuItemImage::create(
-		"CloseNormal.png",
-		"CloseSelected.png",
-		CC_CALLBACK_1(MainMenu::menuCloseCallback, this));
-
-	if (closeItem == nullptr ||
-		closeItem->getContentSize().width <= 0 ||
-		closeItem->getContentSize().height <= 0)
-	{
-		problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
-	}
-	else
-	{
-		float x = origin.x + visibleSize.width - closeItem->getContentSize().width / 2;
-		float y = origin.y + closeItem->getContentSize().height / 2;
-		closeItem->setPosition(Vec2(x, y));
-	}
-
-	//Game
-	auto gameItem = MenuItemImage::create(
-		"buttonRed.png",
-		"buttonRedPressed.png",
-		CC_CALLBACK_1(MainMenu::GotoGameScene, this));
-
-	if (closeItem == nullptr ||
-		closeItem->getContentSize().width <= 0 ||
-		closeItem->getContentSize().height <= 0)
-	{
-		problemLoading("'CloseNormal.png' and 'CloseSelected.png'");
-	}
-	else
-	{
-		float x = visibleSize.width / 2 + origin.x;
-		float y = visibleSize.height / 2 + origin.y;
-		gameItem->setPosition(Vec2(x, y));
-		gameItem->setScaleX(60 * scaleMultilier);
-		gameItem->setScaleY(4 * scaleMultilier);
-	}
-
-	// create menu, it's an autorelease object
-	auto menu = Menu::create(closeItem, gameItem, NULL);
-	menu->setPosition(Vec2::ZERO);
-	this->addChild(menu, 1);
-
-	auto label = Label::createWithTTF("Fish Game", "fonts/Marker Felt.ttf", 24);
-	if (label == nullptr)
-	{
-		problemLoading("'fonts/Marker Felt.ttf'");
-	}
-	else
-	{
-		// position the label on the center of the screen
-		label->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height + origin.y - label->getContentSize().height));
-
-		// add the label as a child to this layer
-		this->addChild(label, 0);
-	}
-
-
-	auto btnLabel = Label::createWithTTF("Play!", "fonts/Marker Felt.ttf", 24);
-	if (btnLabel == nullptr)
-	{
-		problemLoading("'fonts/Marker Felt.ttf'");
-	}
-	else
-	{
-		// position the label on the center of the screen
-		btnLabel->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-
-		// add the label as a child to this layer
-		this->addChild(btnLabel, 1);
-	}
-
-
-}
-
-void MainMenu::GotoGameScene(Ref* pSender) {
-	auto sceneGame = Game::createScene();
-	Director::getInstance()->replaceScene(sceneGame);
-}
 
 void MainMenu::menuCloseCallback(Ref* pSender)
 {
