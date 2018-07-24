@@ -25,8 +25,11 @@
 #ifndef __ENEMY_FISH_H__
 #define __ENEMY_FISH_H__
 
+
+
 #include "cocos2d.h"
 #include <cmath> 
+#include <stdlib.h> 
 
 class EnemyFish
 {
@@ -37,7 +40,8 @@ public:
 	cocos2d::Vec2* target;
 
 	int n;
-
+	float angle;
+	int speed;
 	void Run(float);
 
 	void LookTo(cocos2d::Vec2);

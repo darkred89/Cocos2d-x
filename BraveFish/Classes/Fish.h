@@ -36,7 +36,7 @@ public:
 	Fish(cocos2d::Scene* scene);
 	
 	float currentRotation;
-
+	
 	int n;
 
 	void Turn();

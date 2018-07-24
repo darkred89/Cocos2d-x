@@ -22,10 +22,13 @@
  THE SOFTWARE.
  ****************************************************************************/
 
+
 #ifndef __GAME_SCENE_H__
 #define __GAME_SCENE_H__
 
 #pragma once
+
+#define ENEMY_COUNT 1000
 
 #include "cocos2d.h"
 
@@ -35,10 +38,7 @@
 class Game : public cocos2d::Scene
 {
 public:
-
     static cocos2d::Scene* createScene();
-
-	static float graphicsScale;
 
     virtual bool init();
     
@@ -47,14 +47,15 @@ public:
 	void InitialSetup();
 
 	void update(float) override;
-	
+	void GameOver();
+
+
 	cocos2d::Label* label;
 	int counter;
 	Fish* fish;
-	EnemyFish* enemyFish;
+	EnemyFish* enemyFish[ENEMY_COUNT];
 	cocos2d::Sprite* target;
-
-	void GameOver();
+	static float graphicsScale;
 
 	virtual bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*);
 	virtual void onTouchEnded(cocos2d::Touch*, cocos2d::Event*);

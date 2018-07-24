@@ -29,6 +29,9 @@
 #include "MainMenu.h"
 
 #include <sstream>
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
 
 //#define SSTR( x ) static_cast< std::ostringstream & >( \
 //        ( std::ostringstream() << std::dec << x ) ).str()
@@ -46,7 +49,8 @@ Scene* Game::createScene()
 
 Label label;
 int counter=0;
-Fish* fish = NULL;
+Fish* fish;
+EnemyFish* enemyFish[ENEMY_COUNT];
 Sprite target;
 float Game::graphicsScale;
 
@@ -71,11 +75,20 @@ bool Game::init()
 
 	InitialSetup();
 
-	enemyFish = new EnemyFish(this);
 	fish = new Fish(this);
+
+	srand(time(NULL));
+
+
+	for (int i = 0; i < ENEMY_COUNT; i++) {
+		enemyFish[i] = new EnemyFish(this);
+		enemyFish[i]->LookTo(fish->sprite->getPosition());
+	}
+
+	
 	
 
-	enemyFish->LookTo(fish->sprite->getPosition());
+	
 
 	this->scheduleUpdate();
 
@@ -193,7 +206,9 @@ void Game::InitialSetup() {
 void Game::update(float delta)
 {
 
-	enemyFish->Run(delta);
+	for (int i = 0; i < ENEMY_COUNT; i++) {
+		enemyFish[i]->Run(delta);
+	}
 	
 	if (gameOver) 
 	{
@@ -211,7 +226,7 @@ void Game::update(float delta)
 	
 	//fish->Turn();
 
-	CollisionDetection(fish->sprite, enemyFish->enemyFishSprite);
+	CollisionDetection(fish->sprite, enemyFish[0]->enemyFishSprite);
 
 	//Bubble bubble
 	target->setScale((TARGET_SCALE*(1-sin(0.99*counter/10))/4 + TARGET_SCALE)*graphicsScale);
@@ -278,9 +293,9 @@ bool Game::CollisionDetection(cocos2d::Sprite* sprite1, cocos2d::Sprite* sprite2
 	float rA = sprite1->getContentSize().width / 2;
 	float rB = sprite2->getContentSize().width / 2;
 
-	log("rA: %f", rA);
-	log("radius sum: %f", ((rA + rB)*(rA + rB)) * graphicsScale * graphicsScale * 0.15* 0.15);
-	log("dist: %f", (xA - xB)*(xA - xB) + (yA - yB)*(yA - yB));
+	//log("rA: %f", rA);
+	//log("radius sum: %f", ((rA + rB)*(rA + rB)) * graphicsScale * graphicsScale * 0.15* 0.15);
+	//log("dist: %f", (xA - xB)*(xA - xB) + (yA - yB)*(yA - yB));
 	//if (rect1.intersectsRect(rect2))
 	if ((xA - xB)*(xA - xB) + (yA - yB)*(yA - yB) < ((rA + rB)*(rA + rB))*graphicsScale*graphicsScale*0.15*0.15)
 	{

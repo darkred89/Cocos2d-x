@@ -28,7 +28,9 @@
 #include "EnemyFish.h"
 #include "Game.h"
 #include "SimpleAudioEngine.h"
-
+#include <cstdlib>
+#include <ctime>
+#include <cmath>
 
 USING_NS_CC;
 
@@ -36,12 +38,12 @@ USING_NS_CC;
 //int n;
 //Vec2 EnemyFish : :target;
 
-float angle;
+//float angle;
 
 EnemyFish::EnemyFish(Scene* scene) {
 	//auto visibleSize = Director::getInstance()->getVisibleSize();
 	//Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
+	//srand(seed);
 	enemyFishSprite = Sprite::create("badFish.png");
 	if (enemyFishSprite == nullptr)
 	{
@@ -49,11 +51,6 @@ EnemyFish::EnemyFish(Scene* scene) {
 	}
 	else
 	{
-
-		auto director = cocos2d::Director::getInstance();
-		auto width = cocos2d::Size(director->getOpenGLView()->getFrameSize()).width;
-		auto height = cocos2d::Size(director->getOpenGLView()->getFrameSize()).height;
-		float graphicsScale = 1.0 *width / 960;
 
 		enemyFishSprite->setScale(FISH_SCALE*Game::graphicsScale);
 
@@ -67,10 +64,40 @@ EnemyFish::EnemyFish(Scene* scene) {
 }
 
 Vec2 EnemyFish::GetRandomCoord() {
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
+	
+	int side = rand() % 4;
+
+	speed = FISH_SPEED + rand() % FISH_SPEED;
+	//srand(time(0));
+
+	Vec2 randomPos = Vec2(0, 0);
+	switch (side)
+	{
+		case 0: //TOP
+			randomPos.y = visibleSize.height;
+			randomPos.x= rand() % static_cast<int>(visibleSize.width);
+			break;
+		case 1: //RIGH
+			randomPos.y = rand() % static_cast<int>(visibleSize.height);
+			randomPos.x = visibleSize.width;
+			break;
+		case 2: //BOTTOM
+			randomPos.y = 0;
+			randomPos.x = rand() % static_cast<int>(visibleSize.width);
+			break;
+		case 3: //LEFT
+			randomPos.y = rand() % static_cast<int>(visibleSize.height);
+			randomPos.x = 0;
+			break;
+	}
+
+	log("pos x: %f", randomPos.x);
 
 	Vec2 coord = Vec2(100, 100);
-	return coord;
+	return randomPos;
 }
 
 void EnemyFish::LookTo(Vec2 point) {
@@ -84,9 +111,9 @@ void EnemyFish::LookTo(Vec2 point) {
 
 	angle = atan2(x, y) * 180 / M_PI;
 	
-	cocos2d::log("x: %f", x);
-	cocos2d::log("y: %f", y);
-	cocos2d::log("angle: %f", angle);
+	//cocos2d::log("x: %f", x);
+	//cocos2d::log("y: %f", y);
+	//cocos2d::log("angle: %f", angle);
 
 	enemyFishSprite->setRotation(angle+180);
 	angle = angle / 180 * M_PI; // to radians
@@ -94,7 +121,7 @@ void EnemyFish::LookTo(Vec2 point) {
 
 void EnemyFish::Run(float deltaTime) {
 
-	enemyFishSprite->setPosition(Vec2(enemyFishSprite->getPosition().x + FISH_SPEED * deltaTime*sin(angle), enemyFishSprite->getPosition().y + FISH_SPEED * deltaTime*cos(angle)));
+	enemyFishSprite->setPosition(Vec2(enemyFishSprite->getPosition().x + speed * deltaTime*sin(angle), enemyFishSprite->getPosition().y + speed * deltaTime*cos(angle)));
 	//enemyFishSprite->setScale(2);
 }
 
