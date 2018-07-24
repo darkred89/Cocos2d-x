@@ -22,10 +22,11 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#define FISH_SCALE 0.1
+#define FISH_SCALE 0.15
 #define FISH_SPEED 20
 
 #include "EnemyFish.h"
+#include "Game.h"
 #include "SimpleAudioEngine.h"
 
 
@@ -34,33 +35,41 @@ USING_NS_CC;
 //Sprite* EnemyFish::sprite;
 //int n;
 //Vec2 EnemyFish : :target;
+
 float angle;
 
 EnemyFish::EnemyFish(Scene* scene) {
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	//auto visibleSize = Director::getInstance()->getVisibleSize();
+	//Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	sprite = Sprite::create("badFish.png");
-	if (sprite == nullptr)
+	enemyFishSprite = Sprite::create("badFish.png");
+	if (enemyFishSprite == nullptr)
 	{
 		//
 	}
 	else
 	{
 
-		sprite->setScale(FISH_SCALE);
+		auto director = cocos2d::Director::getInstance();
+		auto width = cocos2d::Size(director->getOpenGLView()->getFrameSize()).width;
+		auto height = cocos2d::Size(director->getOpenGLView()->getFrameSize()).height;
+		float graphicsScale = 1.0 *width / 960;
 
-		sprite->setPosition(GetRandomCoord());
+		enemyFishSprite->setScale(FISH_SCALE*Game::graphicsScale);
+
+		enemyFishSprite->setPosition(GetRandomCoord());
+
+		//sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 
 		// add the sprite as a child to this layer
-		scene->addChild(sprite, 0);
+		scene->addChild(enemyFishSprite, 1);
 	}
 }
 
 Vec2 EnemyFish::GetRandomCoord() {
 
 
-	Vec2 coord = Vec2(0, 0);
+	Vec2 coord = Vec2(100, 100);
 	return coord;
 }
 
@@ -68,10 +77,10 @@ void EnemyFish::LookTo(Vec2 point) {
 
 	log("Begin look to");
 
-	float x = point.x - sprite->getPosition().x;;
-	float y = point.y - sprite->getPosition().y;
+	float x = point.x - enemyFishSprite->getPosition().x;;
+	float y = point.y - enemyFishSprite->getPosition().y;
 
-	target = new Vec2(sprite->getPosition().x, sprite->getPosition().y);
+	target = new Vec2(enemyFishSprite->getPosition().x, enemyFishSprite->getPosition().y);
 
 	angle = atan2(x, y) * 180 / M_PI;
 	
@@ -79,13 +88,14 @@ void EnemyFish::LookTo(Vec2 point) {
 	cocos2d::log("y: %f", y);
 	cocos2d::log("angle: %f", angle);
 
-	sprite->setRotation(angle+180);
+	enemyFishSprite->setRotation(angle+180);
 	angle = angle / 180 * M_PI; // to radians
 }
 
 void EnemyFish::Run(float deltaTime) {
 
-	sprite->setPosition(Vec2(sprite->getPosition().x + FISH_SPEED * deltaTime*sin(angle), sprite->getPosition().y + FISH_SPEED * deltaTime*cos(angle)));
+	enemyFishSprite->setPosition(Vec2(enemyFishSprite->getPosition().x + FISH_SPEED * deltaTime*sin(angle), enemyFishSprite->getPosition().y + FISH_SPEED * deltaTime*cos(angle)));
+	//enemyFishSprite->setScale(2);
 }
 
 

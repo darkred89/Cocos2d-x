@@ -35,7 +35,10 @@
 class Game : public cocos2d::Scene
 {
 public:
+
     static cocos2d::Scene* createScene();
+
+	static float graphicsScale;
 
     virtual bool init();
     
@@ -51,6 +54,7 @@ public:
 	EnemyFish* enemyFish;
 	cocos2d::Sprite* target;
 
+	void GameOver();
 
 	virtual bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*);
 	virtual void onTouchEnded(cocos2d::Touch*, cocos2d::Event*);

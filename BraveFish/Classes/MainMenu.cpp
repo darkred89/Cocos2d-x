@@ -30,7 +30,10 @@ USING_NS_CC;
 
 Scene* MainMenu::createScene()
 {
-    return MainMenu::create();
+	auto scene = Scene::create();
+	auto layer = MainMenu::create();
+	scene->addChild(layer);
+	return scene;
 }
 
 // Print useful error message instead of segfaulting when files are not there.
@@ -81,8 +84,9 @@ void MainMenu::MenuSetup() {
 	}
 	else
 	{
-		float x = origin.x + visibleSize.width - closeItem->getContentSize().width / 2;
-		float y = origin.y + closeItem->getContentSize().height / 2;
+		closeItem->setScale(scaleMultilier);
+		float x = origin.x + visibleSize.width - scaleMultilier*closeItem->getContentSize().width / 2;
+		float y = origin.y + scaleMultilier*closeItem->getContentSize().height / 2;
 		closeItem->setPosition(Vec2(x, y));
 	}
 
@@ -146,6 +150,7 @@ void MainMenu::MenuSetup() {
 
 void MainMenu::GotoGameScene(Ref* pSender) {
 	auto sceneGame = Game::createScene();
+	//Director::getInstance()->pushScene(sceneGame);
 	Director::getInstance()->replaceScene(sceneGame);
 }
 

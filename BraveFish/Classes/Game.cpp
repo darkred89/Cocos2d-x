@@ -21,11 +21,12 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-#define TARGET_SCALE 0.15
+#define TARGET_SCALE 0.2
 
 
 #include "Game.h"
 #include "SimpleAudioEngine.h"
+#include "MainMenu.h"
 
 #include <sstream>
 
@@ -47,7 +48,9 @@ Label label;
 int counter=0;
 Fish* fish = NULL;
 Sprite target;
+float Game::graphicsScale;
 
+bool gameOver;
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
@@ -68,8 +71,9 @@ bool Game::init()
 
 	InitialSetup();
 
-	fish = new Fish(this);
 	enemyFish = new EnemyFish(this);
+	fish = new Fish(this);
+	
 
 	enemyFish->LookTo(fish->sprite->getPosition());
 
@@ -84,6 +88,8 @@ bool Game::init()
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
+	gameOver = false;
+
     return true;
 }
 
@@ -96,7 +102,7 @@ void Game::InitialSetup() {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	float scaleMultilier = width / 960;
+	graphicsScale = 1.0 *width / 960;
 
 	/////////////////////////////
 	// 2. add a menu item with "X" image, which is clicked to quit the program
@@ -116,8 +122,9 @@ void Game::InitialSetup() {
 	}
 	else
 	{
-		float x = origin.x + visibleSize.width - closeItem->getContentSize().width / 2;
-		float y = origin.y + closeItem->getContentSize().height / 2;
+		closeItem->setScale(graphicsScale);
+		float x = origin.x + visibleSize.width - graphicsScale*closeItem->getContentSize().width / 2;
+		float y = origin.y + graphicsScale*closeItem->getContentSize().height / 2;
 		closeItem->setPosition(Vec2(x, y));
 	}
 
@@ -158,6 +165,8 @@ void Game::InitialSetup() {
 		// position the sprite on the center of the screen
 		sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 
+
+		sprite->setScale(graphicsScale);
 		// add the sprite as a child to this layer
 		this->addChild(sprite, 0);
 	}
@@ -171,20 +180,28 @@ void Game::InitialSetup() {
 	{
 		// position the sprite on the center of the screen
 		target->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-		target->setScale(0.15);
+		target->setScale(TARGET_SCALE*graphicsScale);
 		// add the sprite as a child to this layer
 		this->addChild(target, 0);
 	}
 
 
-	label->setString("rrr");
+	//label->setString("rrr");
 
 }
 
 void Game::update(float delta)
 {
-	//test update
+
 	enemyFish->Run(delta);
+	
+	if (gameOver) 
+	{
+		GameOver();
+
+		return;
+	}
+	//test update	
 
 	counter++;
 	int i = 42;
@@ -194,14 +211,34 @@ void Game::update(float delta)
 	
 	//fish->Turn();
 
-	CollisionDetection(fish->sprite, enemyFish->sprite);
+	CollisionDetection(fish->sprite, enemyFish->enemyFishSprite);
 
 	//Bubble bubble
-	target->setScale(TARGET_SCALE*(1-sin(0.99*counter/10))/4 + TARGET_SCALE);
+	target->setScale((TARGET_SCALE*(1-sin(0.99*counter/10))/4 + TARGET_SCALE)*graphicsScale);
 }
+
+void GotoMainMenu() {
+	Director::getInstance()->replaceScene(TransitionFade::create(1, MainMenu::createScene(), Color3B(255, 255, 255)));
+}
+
+void Game::GameOver() {
+
+	//log("GameOver");
+	label->setString("GameOver");
+	//CallFunc *runCallback = CallFunc::create(this, callfunc_selector(GotoMainMenu));
+	float delay = 2.0f;
+	auto delayAction = DelayTime::create(delay);  // For 2 Seconds of Delay
+	auto funcCallback = CallFunc::create([]() {GotoMainMenu(); });
+	this->runAction(Sequence::create(delayAction, funcCallback, NULL));
+
+}
+
+
 
 bool Game::onTouchBegan(Touch* touch, Event* event)
 {
+	if (gameOver) return true;
+
 	target->setPosition(touch->getLocation());
 	return true;
 }
@@ -210,11 +247,13 @@ void Game::onTouchEnded(Touch* touch, Event* event)
 {
 	cocos2d::log("touch ended");
 	
-	fish->LookTo(touch->getLocation());
+	//fish->LookTo(touch->getLocation());
 }
 
 void Game::onTouchMoved(Touch* touch, Event* event)
 {
+	if (gameOver) return;
+
 	fish->LookTo(touch->getLocation());
 	target->setPosition(touch->getLocation());
 	//cocos2d::log("touch moved");
@@ -230,9 +269,24 @@ bool Game::CollisionDetection(cocos2d::Sprite* sprite1, cocos2d::Sprite* sprite2
 	Rect rect1 = sprite1->getBoundingBox();
 	Rect rect2 = sprite2->getBoundingBox();
 
-	if (rect1.intersectsRect(rect2))
+	float xA = sprite1->getPosition().x;
+	float yA = sprite1->getPosition().y;
+
+	float xB = sprite2->getPosition().x;
+	float yB = sprite2->getPosition().y;
+
+	float rA = sprite1->getContentSize().width / 2;
+	float rB = sprite2->getContentSize().width / 2;
+
+	log("rA: %f", rA);
+	log("radius sum: %f", ((rA + rB)*(rA + rB)) * graphicsScale * graphicsScale * 0.15* 0.15);
+	log("dist: %f", (xA - xB)*(xA - xB) + (yA - yB)*(yA - yB));
+	//if (rect1.intersectsRect(rect2))
+	if ((xA - xB)*(xA - xB) + (yA - yB)*(yA - yB) < ((rA + rB)*(rA + rB))*graphicsScale*graphicsScale*0.15*0.15)
 	{
 		log("Collided");
+		//Director::getInstance()->replaceScene(TransitionFade::create(1, MainMenu::createScene(), Color3B(255, 255, 255)));
+		gameOver = true;
 	}
 	else
 	{
@@ -246,7 +300,9 @@ bool Game::CollisionDetection(cocos2d::Sprite* sprite1, cocos2d::Sprite* sprite2
 void Game::menuCloseCallback(Ref* pSender)
 {
     //Close the cocos2d-x game scene and quit the application
-    Director::getInstance()->end();
+    //Director::getInstance()->end();
+
+	Director::getInstance()->replaceScene(TransitionFade::create(1, MainMenu::createScene(), Color3B(255, 255, 255)));
 
     #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     exit(0);

@@ -32,7 +32,7 @@ class EnemyFish
 {
 public:
 
-	cocos2d::Sprite* sprite;
+	cocos2d::Sprite* enemyFishSprite;
 	EnemyFish(cocos2d::Scene* scene);
 	cocos2d::Vec2* target;
 
