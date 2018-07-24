@@ -22,45 +22,28 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#ifndef __GAME_SCENE_H__
-#define __GAME_SCENE_H__
-
-#pragma once
+#ifndef __ENEMY_FISH_H__
+#define __ENEMY_FISH_H__
 
 #include "cocos2d.h"
+#include <cmath> 
 
-#include "Fish.h"
-#include "EnemyFish.h"
-
-class Game : public cocos2d::Scene
+class EnemyFish
 {
 public:
-    static cocos2d::Scene* createScene();
 
-    virtual bool init();
-    
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
-	void InitialSetup();
+	cocos2d::Sprite* sprite;
+	EnemyFish(cocos2d::Scene* scene);
+	cocos2d::Vec2* target;
 
-	void update(float) override;
-	
-	cocos2d::Label* label;
-	int counter;
-	Fish* fish;
-	EnemyFish* enemyFish;
-	cocos2d::Sprite* target;
+	int n;
 
+	void Run(float);
 
-	virtual bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchEnded(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchMoved(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchCancelled(cocos2d::Touch*, cocos2d::Event*);
+	void LookTo(cocos2d::Vec2);
 
-	bool CollisionDetection(cocos2d::Sprite*, cocos2d::Sprite*);
+	cocos2d::Vec2 GetRandomCoord();
 
-    // implement the "static create()" method manually
-    CREATE_FUNC(Game);
 };
 
 #endif // __HELLOWORLD_SCENE_H__

@@ -69,6 +69,9 @@ bool Game::init()
 	InitialSetup();
 
 	fish = new Fish(this);
+	enemyFish = new EnemyFish(this);
+
+	enemyFish->LookTo(fish->sprite->getPosition());
 
 	this->scheduleUpdate();
 
@@ -181,7 +184,8 @@ void Game::InitialSetup() {
 void Game::update(float delta)
 {
 	//test update
-	
+	enemyFish->Run(delta);
+
 	counter++;
 	int i = 42;
 	//std::string s = SSTR("Frames passed: " << counter);
@@ -190,7 +194,7 @@ void Game::update(float delta)
 	
 	//fish->Turn();
 
-	//CollisionDetection(fish->sprite, target);
+	CollisionDetection(fish->sprite, enemyFish->sprite);
 
 	//Bubble bubble
 	target->setScale(TARGET_SCALE*(1-sin(0.99*counter/10))/4 + TARGET_SCALE);
@@ -232,7 +236,7 @@ bool Game::CollisionDetection(cocos2d::Sprite* sprite1, cocos2d::Sprite* sprite2
 	}
 	else
 	{
-		log("Not collided");
+		//log("Not collided");
 	}
 
 	return false;

@@ -23,26 +23,24 @@
  ****************************************************************************/
 
 #define FISH_SCALE 0.1
-#define FISH_TURN_RATE 3
+#define FISH_SPEED 20
 
-#include "Fish.h"
+#include "EnemyFish.h"
 #include "SimpleAudioEngine.h"
-
-#define SSTR( x ) static_cast< std::ostringstream & >( \
-        ( std::ostringstream() << std::dec << x ) ).str()
 
 
 USING_NS_CC;
 
-//Sprite* sprite;
-//float currentRotation;
+//Sprite* EnemyFish::sprite;
 //int n;
+//Vec2 EnemyFish : :target;
+float angle;
 
-Fish::Fish(Scene* scene) {
+EnemyFish::EnemyFish(Scene* scene) {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
-	sprite = Sprite::create("fish.png");
+	sprite = Sprite::create("badFish.png");
 	if (sprite == nullptr)
 	{
 		//
@@ -52,42 +50,42 @@ Fish::Fish(Scene* scene) {
 
 		sprite->setScale(FISH_SCALE);
 
-		sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+		sprite->setPosition(GetRandomCoord());
 
 		// add the sprite as a child to this layer
 		scene->addChild(sprite, 0);
 	}
-	currentRotation = 0;
 }
 
-void Fish::LookTo(Vec2 point) {
+Vec2 EnemyFish::GetRandomCoord() {
 
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	Vec2 coord = Vec2(0, 0);
+	return coord;
+}
+
+void EnemyFish::LookTo(Vec2 point) {
 
 	log("Begin look to");
 
-	float x = point.x - sprite->getPosition().x;// - sprite->getContentSize().width;
-	float y = point.y - sprite->getPosition().y;// -sprite->getContentSize().width;
+	float x = point.x - sprite->getPosition().x;;
+	float y = point.y - sprite->getPosition().y;
 
-	
+	target = new Vec2(sprite->getPosition().x, sprite->getPosition().y);
 
-	float angle = atan2(x, y) * 180 / M_PI;
+	angle = atan2(x, y) * 180 / M_PI;
 	
 	cocos2d::log("x: %f", x);
 	cocos2d::log("y: %f", y);
 	cocos2d::log("angle: %f", angle);
 
 	sprite->setRotation(angle+180);
+	angle = angle / 180 * M_PI; // to radians
 }
 
-void Fish::Turn() {
+void EnemyFish::Run(float deltaTime) {
 
-
-	n++;
-	currentRotation += FISH_TURN_RATE;
-	sprite->setRotation(currentRotation);
-
+	sprite->setPosition(Vec2(sprite->getPosition().x + FISH_SPEED * deltaTime*sin(angle), sprite->getPosition().y + FISH_SPEED * deltaTime*cos(angle)));
 }
 
 

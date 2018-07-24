@@ -26,6 +26,7 @@
 #define __FISH_H__
 
 #include "cocos2d.h"
+#include <cmath> 
 
 class Fish
 {
