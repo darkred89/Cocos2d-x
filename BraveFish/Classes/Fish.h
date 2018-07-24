@@ -39,6 +39,8 @@ public:
 	int n;
 
 	void Turn();
+	
+	void LookTo(cocos2d::Vec2);
 };
 
 #endif // __HELLOWORLD_SCENE_H__

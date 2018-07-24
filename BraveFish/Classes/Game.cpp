@@ -29,8 +29,8 @@
 
 #include <sstream>
 
-#define SSTR( x ) static_cast< std::ostringstream & >( \
-        ( std::ostringstream() << std::dec << x ) ).str()
+//#define SSTR( x ) static_cast< std::ostringstream & >( \
+//        ( std::ostringstream() << std::dec << x ) ).str()
 
 USING_NS_CC;
 
@@ -184,12 +184,15 @@ void Game::update(float delta)
 	
 	counter++;
 	int i = 42;
-	std::string s = SSTR("Frames passed: " << counter);
+	//std::string s = SSTR("Frames passed: " << counter);
 
-	label->setString(s);
+	//label->setString(s);
 	
-	fish->Turn();
+	//fish->Turn();
 
+	//CollisionDetection(fish->sprite, target);
+
+	//Bubble bubble
 	target->setScale(TARGET_SCALE*(1-sin(0.99*counter/10))/4 + TARGET_SCALE);
 }
 
@@ -202,17 +205,39 @@ bool Game::onTouchBegan(Touch* touch, Event* event)
 void Game::onTouchEnded(Touch* touch, Event* event)
 {
 	cocos2d::log("touch ended");
+	
+	fish->LookTo(touch->getLocation());
 }
 
 void Game::onTouchMoved(Touch* touch, Event* event)
 {
-	cocos2d::log("touch moved");
+	fish->LookTo(touch->getLocation());
+	target->setPosition(touch->getLocation());
+	//cocos2d::log("touch moved");
 }
 
 void Game::onTouchCancelled(Touch* touch, Event* event)
 {
-	cocos2d::log("touch cancelled");
+	//cocos2d::log("touch cancelled");
 }
+
+bool Game::CollisionDetection(cocos2d::Sprite* sprite1, cocos2d::Sprite* sprite2) {
+
+	Rect rect1 = sprite1->getBoundingBox();
+	Rect rect2 = sprite2->getBoundingBox();
+
+	if (rect1.intersectsRect(rect2))
+	{
+		log("Collided");
+	}
+	else
+	{
+		log("Not collided");
+	}
+
+	return false;
+}
+
 
 void Game::menuCloseCallback(Ref* pSender)
 {
