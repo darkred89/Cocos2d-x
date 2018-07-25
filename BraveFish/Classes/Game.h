@@ -39,6 +39,7 @@ class Game : public cocos2d::Scene
 {
 public:
     static cocos2d::Scene* createScene();
+	static bool gameOver;
 
     virtual bool init();
     
@@ -64,7 +65,7 @@ public:
 	virtual void onTouchMoved(cocos2d::Touch*, cocos2d::Event*);
 	virtual void onTouchCancelled(cocos2d::Touch*, cocos2d::Event*);
 
-	bool CollisionDetection(cocos2d::Sprite*, cocos2d::Sprite*);
+	
 
     // implement the "static create()" method manually
     CREATE_FUNC(Game);

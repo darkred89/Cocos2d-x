@@ -21,7 +21,7 @@
  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  THE SOFTWARE.
  ****************************************************************************/
-#define TARGET_SCALE 0.2
+//#define TARGET_SCALE 0.2
 
 
 #include "Game.h"
@@ -51,7 +51,7 @@ int counter=0;
 //EnemyFish* enemyFish[ENEMY_COUNT];
 Sprite target;
 
-bool gameOver;
+bool Game::gameOver;
 
 // Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
@@ -72,19 +72,11 @@ bool Game::init()
 
 	InitialSetup();
 
-	//fish = new Fish(this);
-
 	srand(time(NULL));
-
-
-	//for (int i = 0; i < ENEMY_COUNT; i++) {
-	//	enemyFish[i] = new EnemyFish(this);
-	//	enemyFish[i]->LookTo(fish->sprite->getPosition());
-	//}
 
 	spawner =new Spawner(this,graphicsScale);
 	spawner->SpawnFish();
-	
+	spawner->SpawnEnemyFish();
 
 	
 
@@ -182,19 +174,19 @@ void Game::InitialSetup() {
 		this->addChild(sprite, 0);
 	}
 
-	target = Sprite::create("bubble.png");
-	if (target == nullptr)
-	{
-		problemLoading("'bubble.png'");
-	}
-	else
-	{
-		// position the sprite on the center of the screen
-		target->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-		target->setScale(TARGET_SCALE*graphicsScale);
-		// add the sprite as a child to this layer
-		this->addChild(target, 0);
-	}
+	//target = Sprite::create("bubble.png");
+	//if (target == nullptr)
+	//{
+	//	problemLoading("'bubble.png'");
+	//}
+	//else
+	//{
+	//	// position the sprite on the center of the screen
+	//	target->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+	//	target->setScale(TARGET_SCALE*graphicsScale);
+	//	// add the sprite as a child to this layer
+	//	this->addChild(target, 0);
+	//}
 
 
 	//label->setString("rrr");
@@ -219,13 +211,13 @@ void Game::update(float delta)
 	//std::string s = SSTR("Frames passed: " << counter);
 
 	//label->setString(s);
-	counter++;
+	//counter++;
 	//fish->Turn();
 
 	//CollisionDetection(fish->sprite, enemyFish[0]->enemyFishSprite);
 
 	//Bubble bubble
-	target->setScale((TARGET_SCALE*(1-sin(0.99*counter/10))/4 + TARGET_SCALE)*graphicsScale);
+	//target->setScale((TARGET_SCALE*(1-sin(0.99*counter/10))/4 + TARGET_SCALE)*graphicsScale);
 }
 
 void GotoMainMenu() {
@@ -250,7 +242,10 @@ bool Game::onTouchBegan(Touch* touch, Event* event)
 {
 	if (gameOver) return true;
 	spawner->TurnPlayerFish(touch->getLocation());
-	target->setPosition(touch->getLocation());
+	spawner->SpawnBubble();
+	//target->setPosition(touch->getLocation());
+
+
 	return true;
 }
 
@@ -268,7 +263,7 @@ void Game::onTouchMoved(Touch* touch, Event* event)
 	spawner->TurnPlayerFish(touch->getLocation());
 
 //	fish->LookTo(touch->getLocation());
-	target->setPosition(touch->getLocation());
+	//target->setPosition(touch->getLocation());
 	//cocos2d::log("touch moved");
 }
 
@@ -277,37 +272,7 @@ void Game::onTouchCancelled(Touch* touch, Event* event)
 	//cocos2d::log("touch cancelled");
 }
 
-bool Game::CollisionDetection(cocos2d::Sprite* sprite1, cocos2d::Sprite* sprite2) {
 
-	Rect rect1 = sprite1->getBoundingBox();
-	Rect rect2 = sprite2->getBoundingBox();
-
-	float xA = sprite1->getPosition().x;
-	float yA = sprite1->getPosition().y;
-
-	float xB = sprite2->getPosition().x;
-	float yB = sprite2->getPosition().y;
-
-	float rA = sprite1->getContentSize().width / 2;
-	float rB = sprite2->getContentSize().width / 2;
-
-	//log("rA: %f", rA);
-	//log("radius sum: %f", ((rA + rB)*(rA + rB)) * graphicsScale * graphicsScale * 0.15* 0.15);
-	//log("dist: %f", (xA - xB)*(xA - xB) + (yA - yB)*(yA - yB));
-	//if (rect1.intersectsRect(rect2))
-	if ((xA - xB)*(xA - xB) + (yA - yB)*(yA - yB) < ((rA + rB)*(rA + rB))*graphicsScale*graphicsScale*0.15*0.15)
-	{
-		log("Collided");
-		//Director::getInstance()->replaceScene(TransitionFade::create(1, MainMenu::createScene(), Color3B(255, 255, 255)));
-		gameOver = true;
-	}
-	else
-	{
-		//log("Not collided");
-	}
-
-	return false;
-}
 
 
 void Game::menuCloseCallback(Ref* pSender)

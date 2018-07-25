@@ -26,7 +26,6 @@
 #define __ENEMY_FISH_H__
 
 
-#include "Spawner.h"
 #include "cocos2d.h"
 #include <cmath> 
 #include <stdlib.h> 
@@ -38,7 +37,7 @@ public:
 	cocos2d::Sprite* enemyFishSprite;
 	EnemyFish(cocos2d::Scene* scene);
 	cocos2d::Vec2* target;
-
+	
 	int n;
 	float angle;
 	int speed;

@@ -77,6 +77,8 @@ void Fish::LookTo(Vec2 point) {
 
 	float angle = atan2(x, y) * 180 / M_PI;
 	
+	currentRotation = angle;
+
 	cocos2d::log("x: %f", x);
 	cocos2d::log("y: %f", y);
 	cocos2d::log("angle: %f", angle);

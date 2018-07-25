@@ -32,7 +32,7 @@
 #define BUBBLE_SCALE 0.15
 #define TARGET_SCALE 0.15
 #define FISH_SPEED 20
-#define BUBBLE_SPEED 30
+#define BUBBLE_SPEED 50
 
 #define RELOAD_TIME 2
 
@@ -40,11 +40,9 @@
 #define BUBBLE_COUNT 100
 
 
-
-
 #include "Fish.h"
-//#include "EnemyFish.h"
-//#include "Bubble.h"
+#include "EnemyFish.h"
+#include "Bubble.h"
 
 #include <cmath> 
 #include <stdlib.h> 
@@ -62,18 +60,25 @@ public:
 	void Run(float deltaTime);
 
 	void SpawnFish();
+	void SpawnEnemyFish();
 	void SpawnBubble();
+
 	void TurnPlayerFish(cocos2d::Vec2 lookPos);
-	//Bubble* bubble;
+	bool CollisionDetection(cocos2d::Sprite*, cocos2d::Sprite*);
+	
+	Bubble* bubble;
 
 	Fish* playerFish;
+	EnemyFish* enemyFish;
 
 private:
 	//Bubble* bubbleList[FISH_COUNT];
-	
+	void CheckFishCollide();
+	void CheckBubbleCollide();
+
 	float fireCounter;
 	bool canFire;
-	void SpawnEnemyFish();
+	
 	cocos2d::Scene* scene;
 };
 

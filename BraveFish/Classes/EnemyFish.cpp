@@ -26,6 +26,7 @@
 //#define FISH_SPEED 20
 
 #include "EnemyFish.h"
+#include "Spawner.h"
 //#include "Game.h"
 #include "SimpleAudioEngine.h"
 #include <cstdlib>
@@ -77,26 +78,25 @@ Vec2 EnemyFish::GetRandomCoord() {
 	switch (side)
 	{
 		case 0: //TOP
-			randomPos.y = visibleSize.height;
+			randomPos.y = visibleSize.height+origin.y;
 			randomPos.x= rand() % static_cast<int>(visibleSize.width);
 			break;
 		case 1: //RIGH
 			randomPos.y = rand() % static_cast<int>(visibleSize.height);
-			randomPos.x = visibleSize.width;
+			randomPos.x = visibleSize.width+origin.x;
 			break;
 		case 2: //BOTTOM
-			randomPos.y = 0;
+			randomPos.y = origin.y;
 			randomPos.x = rand() % static_cast<int>(visibleSize.width);
 			break;
 		case 3: //LEFT
 			randomPos.y = rand() % static_cast<int>(visibleSize.height);
-			randomPos.x = 0;
+			randomPos.x = origin.x;
 			break;
 	}
 
 	log("pos x: %f", randomPos.x);
 
-	Vec2 coord = Vec2(100, 100);
 	return randomPos;
 }
 

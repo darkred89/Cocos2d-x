@@ -25,29 +25,22 @@
 #ifndef __BUBBLE_H__
 #define __BUBBLE_H__
 
-
-
-
-////#include "Game.h"
-//#include "Bubble.h"
 #include "cocos2d.h"
-#include <cmath> 
-#include <stdlib.h> 
 
-//
 class Bubble
 {
 public:
 
 	cocos2d::Sprite* sprite;
 	Bubble(cocos2d::Scene* scene, cocos2d::Vec2 position, float rotation,int speed);
+	void SetNewPos(cocos2d::Vec2 position, float rotation, int speed);
 	cocos2d::Vec2* target;
 	float counter;
 	float angle;
 	int n;
 	int speed;
 	void Run(float);
-
+	
 };
 
 #endif // __HELLOWORLD_SCENE_H__
