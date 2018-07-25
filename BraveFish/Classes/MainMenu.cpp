@@ -114,7 +114,7 @@ void MainMenu::MenuSetup() {
 	// create menu, it's an autorelease object
 	auto menu = Menu::create(closeItem, gameItem, NULL);
 	menu->setPosition(Vec2::ZERO);
-	this->addChild(menu, 1);
+	this->addChild(menu, 2);
 
 	auto label = Label::createWithTTF("Fish Game", "fonts/Marker Felt.ttf", 24);
 	if (label == nullptr)
@@ -127,7 +127,7 @@ void MainMenu::MenuSetup() {
 		label->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height + origin.y - label->getContentSize().height));
 
 		// add the label as a child to this layer
-		this->addChild(label, 0);
+		this->addChild(label, 2);
 	}
 
 
@@ -142,7 +142,7 @@ void MainMenu::MenuSetup() {
 		btnLabel->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 
 		// add the label as a child to this layer
-		this->addChild(btnLabel, 1);
+		this->addChild(btnLabel, 2);
 	}
 
 

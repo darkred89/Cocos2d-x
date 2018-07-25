@@ -22,55 +22,61 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-
-#ifndef __GAME_SCENE_H__
-#define __GAME_SCENE_H__
-
-#pragma once
-
-#define ENEMY_COUNT 3
-
+//#define FISH_SCALE 0.15
+//#define FISH_SPEED 20
 #include "cocos2d.h"
+#include "Bubble.h"
 #include "Spawner.h"
-//#include "Fish.h"
-//#include "EnemyFish.h"
+#include "SimpleAudioEngine.h"
 
-class Game : public cocos2d::Scene
-{
-public:
-    static cocos2d::Scene* createScene();
+//USING_NS_CC;
 
-    virtual bool init();
-    
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
-	void InitialSetup();
+//Sprite* EnemyFish::sprite;
+//int n;
+//Vec2 EnemyFish : :target;
 
-	void update(float) override;
-	void GameOver();
+//float angle;
+
+Bubble::Bubble(cocos2d::Scene* scene, cocos2d::Vec2 position, float rotation, int speed) {
+	auto visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
+	cocos2d::Vec2 origin = cocos2d::Director::getInstance()->getVisibleOrigin();
+
+	//sprite = Sprite::create("bubble.png");
+	if (sprite == nullptr)
+	{
+		//
+	}
+	else
+	{
+
+		sprite->setScale(FISH_SCALE*Spawner::graphicsScale);
+
+		angle = rotation;
+
+		sprite->setPosition(position);
+		sprite->setRotation(rotation);
+
+		angle = angle / 180 * M_PI; // to radians
+
+		this->speed = speed;
+
+		cocos2d::log("Bubble speed %f", this->speed);
+
+		// add the sprite as a child to this layer
+		scene->addChild(sprite, 1);
+	}
+	counter = 0;
+}
 
 
-	cocos2d::Label* label;
-	int counter;
-	//Fish* fish;
-	//EnemyFish* enemyFish[ENEMY_COUNT];
-	cocos2d::Sprite* target;
-	Spawner* spawner;
-	
-	
 
-	virtual bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchEnded(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchMoved(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchCancelled(cocos2d::Touch*, cocos2d::Event*);
+void Bubble::Run(float deltaTime) {
+	counter += deltaTime;
+	sprite->setPosition(cocos2d::Vec2(sprite->getPosition().x + speed * deltaTime*sin(angle), sprite->getPosition().y + speed * deltaTime*cos(angle)));
+	//enemyFishSprite->setScale(2);
+	sprite->setScale((TARGET_SCALE*(1 - sin(0.99*counter / 10)) / 4 + TARGET_SCALE)*Spawner::graphicsScale);
+}
 
-	bool CollisionDetection(cocos2d::Sprite*, cocos2d::Sprite*);
 
-    // implement the "static create()" method manually
-    CREATE_FUNC(Game);
 
-private:
-	float graphicsScale;	
-};
 
-#endif // __HELLOWORLD_SCENE_H__

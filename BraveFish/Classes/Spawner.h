@@ -23,54 +23,72 @@
  ****************************************************************************/
 
 
-#ifndef __GAME_SCENE_H__
-#define __GAME_SCENE_H__
+#ifndef SPAWNER_H
+#define SPAWNER_H
 
 #pragma once
 
-#define ENEMY_COUNT 3
+#define FISH_SCALE 0.15
+#define BUBBLE_SCALE 0.15
+#define TARGET_SCALE 0.15
+#define FISH_SPEED 20
+#define BUBBLE_SPEED 30
 
-#include "cocos2d.h"
-#include "Spawner.h"
-//#include "Fish.h"
+#define RELOAD_TIME 2
+
+#define FISH_COUNT 100
+#define BUBBLE_COUNT 100
+
+
+
+
+#include "Fish.h"
 //#include "EnemyFish.h"
+//#include "Bubble.h"
 
-class Game : public cocos2d::Scene
+#include <cmath> 
+#include <stdlib.h> 
+#include <cstdlib>
+#include <ctime>
+
+class Spawner
 {
 public:
-    static cocos2d::Scene* createScene();
 
-    virtual bool init();
-    
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
-	void InitialSetup();
+	static float graphicsScale;
 
-	void update(float) override;
-	void GameOver();
+	Spawner(cocos2d::Scene* _scene, float scale);
 
+	void Run(float deltaTime);
 
-	cocos2d::Label* label;
-	int counter;
-	//Fish* fish;
-	//EnemyFish* enemyFish[ENEMY_COUNT];
-	cocos2d::Sprite* target;
-	Spawner* spawner;
-	
-	
+	void SpawnFish();
+	void SpawnBubble();
+	void TurnPlayerFish(cocos2d::Vec2 lookPos);
+	//Bubble* bubble;
 
-	virtual bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchEnded(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchMoved(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchCancelled(cocos2d::Touch*, cocos2d::Event*);
-
-	bool CollisionDetection(cocos2d::Sprite*, cocos2d::Sprite*);
-
-    // implement the "static create()" method manually
-    CREATE_FUNC(Game);
+	Fish* playerFish;
 
 private:
-	float graphicsScale;	
+	//Bubble* bubbleList[FISH_COUNT];
+	
+	float fireCounter;
+	bool canFire;
+	void SpawnEnemyFish();
+	cocos2d::Scene* scene;
 };
 
+
+class EnemyFishHolder
+{
+public:
+	//Fish* fishList[FISH_COUNT];
+
+};
+
+class BubbleHolder
+{
+public:
+
+
+};
 #endif // __HELLOWORLD_SCENE_H__

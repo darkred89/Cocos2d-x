@@ -26,7 +26,7 @@
 #define __ENEMY_FISH_H__
 
 
-
+#include "Spawner.h"
 #include "cocos2d.h"
 #include <cmath> 
 #include <stdlib.h> 

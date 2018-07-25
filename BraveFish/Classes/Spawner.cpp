@@ -23,54 +23,46 @@
  ****************************************************************************/
 
 
-#ifndef __GAME_SCENE_H__
-#define __GAME_SCENE_H__
-
-#pragma once
-
-#define ENEMY_COUNT 3
-
-#include "cocos2d.h"
 #include "Spawner.h"
-//#include "Fish.h"
-//#include "EnemyFish.h"
+#include "cocos2d.h"
 
-class Game : public cocos2d::Scene
+USING_NS_CC;
+
+//Sprite* EnemyFish::sprite;
+//int n;
+//Vec2 EnemyFish : :target;
+
+//float angle;
+
+float Spawner::graphicsScale;
+
+Spawner::Spawner(Scene* _scene, float scale)
 {
-public:
-    static cocos2d::Scene* createScene();
+	scene = _scene;
+	graphicsScale = scale;
+}
 
-    virtual bool init();
-    
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
-	void InitialSetup();
+void Spawner::SpawnFish()
+{
+	playerFish =  new Fish(scene);
 
-	void update(float) override;
-	void GameOver();
+}
 
-
-	cocos2d::Label* label;
-	int counter;
-	//Fish* fish;
-	//EnemyFish* enemyFish[ENEMY_COUNT];
-	cocos2d::Sprite* target;
-	Spawner* spawner;
-	
+void Spawner::SpawnBubble()
+{
 	
 
-	virtual bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchEnded(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchMoved(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchCancelled(cocos2d::Touch*, cocos2d::Event*);
+}
 
-	bool CollisionDetection(cocos2d::Sprite*, cocos2d::Sprite*);
+void Spawner::Run(float deltaTime) 
+{
 
-    // implement the "static create()" method manually
-    CREATE_FUNC(Game);
+	
+}
 
-private:
-	float graphicsScale;	
-};
+void Spawner::TurnPlayerFish(Vec2 lookPos)
+{
+	playerFish->LookTo(lookPos);
+}
 
-#endif // __HELLOWORLD_SCENE_H__
+

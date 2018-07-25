@@ -22,12 +22,14 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#define FISH_SCALE 0.15
+//#define FISH_SCALE 0.15
 #define FISH_TURN_RATE 3
 
 #include "Fish.h"
-#include "Game.h"
+#include "Spawner.h"
 #include "SimpleAudioEngine.h"
+
+//#include "Fish.h"
 
 //#define SSTR( x ) static_cast< std::ostringstream & >( \
 //        ( std::ostringstream() << std::dec << x ) ).str()
@@ -51,7 +53,7 @@ Fish::Fish(Scene* scene) {
 	else
 	{
 
-		sprite->setScale(FISH_SCALE*Game::graphicsScale);
+		sprite->setScale(FISH_SCALE*Spawner::graphicsScale);
 
 		sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 

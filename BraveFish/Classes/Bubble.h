@@ -22,55 +22,32 @@
  THE SOFTWARE.
  ****************************************************************************/
 
+#ifndef __BUBBLE_H__
+#define __BUBBLE_H__
 
-#ifndef __GAME_SCENE_H__
-#define __GAME_SCENE_H__
 
-#pragma once
 
-#define ENEMY_COUNT 3
 
+////#include "Game.h"
+//#include "Bubble.h"
 #include "cocos2d.h"
-#include "Spawner.h"
-//#include "Fish.h"
-//#include "EnemyFish.h"
+#include <cmath> 
+#include <stdlib.h> 
 
-class Game : public cocos2d::Scene
+//
+class Bubble
 {
 public:
-    static cocos2d::Scene* createScene();
 
-    virtual bool init();
-    
-    // a selector callback
-    void menuCloseCallback(cocos2d::Ref* pSender);
-	void InitialSetup();
+	cocos2d::Sprite* sprite;
+	Bubble(cocos2d::Scene* scene, cocos2d::Vec2 position, float rotation,int speed);
+	cocos2d::Vec2* target;
+	float counter;
+	float angle;
+	int n;
+	int speed;
+	void Run(float);
 
-	void update(float) override;
-	void GameOver();
-
-
-	cocos2d::Label* label;
-	int counter;
-	//Fish* fish;
-	//EnemyFish* enemyFish[ENEMY_COUNT];
-	cocos2d::Sprite* target;
-	Spawner* spawner;
-	
-	
-
-	virtual bool onTouchBegan(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchEnded(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchMoved(cocos2d::Touch*, cocos2d::Event*);
-	virtual void onTouchCancelled(cocos2d::Touch*, cocos2d::Event*);
-
-	bool CollisionDetection(cocos2d::Sprite*, cocos2d::Sprite*);
-
-    // implement the "static create()" method manually
-    CREATE_FUNC(Game);
-
-private:
-	float graphicsScale;	
 };
 
 #endif // __HELLOWORLD_SCENE_H__

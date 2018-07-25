@@ -29,9 +29,7 @@
 #include "MainMenu.h"
 
 #include <sstream>
-#include <cstdlib>
-#include <ctime>
-#include <cmath>
+
 
 //#define SSTR( x ) static_cast< std::ostringstream & >( \
 //        ( std::ostringstream() << std::dec << x ) ).str()
@@ -49,10 +47,9 @@ Scene* Game::createScene()
 
 Label label;
 int counter=0;
-Fish* fish;
-EnemyFish* enemyFish[ENEMY_COUNT];
+//Fish* fish;
+//EnemyFish* enemyFish[ENEMY_COUNT];
 Sprite target;
-float Game::graphicsScale;
 
 bool gameOver;
 
@@ -75,17 +72,18 @@ bool Game::init()
 
 	InitialSetup();
 
-	fish = new Fish(this);
+	//fish = new Fish(this);
 
 	srand(time(NULL));
 
 
-	for (int i = 0; i < ENEMY_COUNT; i++) {
-		enemyFish[i] = new EnemyFish(this);
-		enemyFish[i]->LookTo(fish->sprite->getPosition());
-	}
+	//for (int i = 0; i < ENEMY_COUNT; i++) {
+	//	enemyFish[i] = new EnemyFish(this);
+	//	enemyFish[i]->LookTo(fish->sprite->getPosition());
+	//}
 
-	
+	spawner =new Spawner(this,graphicsScale);
+	spawner->SpawnFish();
 	
 
 	
@@ -144,7 +142,7 @@ void Game::InitialSetup() {
 	// create menu, it's an autorelease object
 	auto menu = Menu::create(closeItem, NULL);
 	menu->setPosition(Vec2::ZERO);
-	this->addChild(menu, 1);
+	this->addChild(menu, 2);
 
 	/////////////////////////////
 	// 3. add your codes below...
@@ -164,7 +162,7 @@ void Game::InitialSetup() {
 			origin.y + visibleSize.height - label->getContentSize().height));
 
 		// add the label as a child to this layer
-		this->addChild(label, 1);
+		this->addChild(label, 2);
 	}
 
 	// add "HelloWorld" splash screen"
@@ -205,10 +203,10 @@ void Game::InitialSetup() {
 
 void Game::update(float delta)
 {
-
-	for (int i = 0; i < ENEMY_COUNT; i++) {
-		enemyFish[i]->Run(delta);
-	}
+	spawner->Run(delta);
+	//for (int i = 0; i < ENEMY_COUNT; i++) {
+	//	enemyFish[i]->Run(delta);
+	//}
 	
 	if (gameOver) 
 	{
@@ -218,15 +216,13 @@ void Game::update(float delta)
 	}
 	//test update	
 
-	counter++;
-	int i = 42;
 	//std::string s = SSTR("Frames passed: " << counter);
 
 	//label->setString(s);
-	
+	counter++;
 	//fish->Turn();
 
-	CollisionDetection(fish->sprite, enemyFish[0]->enemyFishSprite);
+	//CollisionDetection(fish->sprite, enemyFish[0]->enemyFishSprite);
 
 	//Bubble bubble
 	target->setScale((TARGET_SCALE*(1-sin(0.99*counter/10))/4 + TARGET_SCALE)*graphicsScale);
@@ -253,7 +249,7 @@ void Game::GameOver() {
 bool Game::onTouchBegan(Touch* touch, Event* event)
 {
 	if (gameOver) return true;
-
+	spawner->TurnPlayerFish(touch->getLocation());
 	target->setPosition(touch->getLocation());
 	return true;
 }
@@ -269,7 +265,9 @@ void Game::onTouchMoved(Touch* touch, Event* event)
 {
 	if (gameOver) return;
 
-	fish->LookTo(touch->getLocation());
+	spawner->TurnPlayerFish(touch->getLocation());
+
+//	fish->LookTo(touch->getLocation());
 	target->setPosition(touch->getLocation());
 	//cocos2d::log("touch moved");
 }

@@ -22,11 +22,11 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#define FISH_SCALE 0.15
-#define FISH_SPEED 20
+//#define FISH_SCALE 0.15
+//#define FISH_SPEED 20
 
 #include "EnemyFish.h"
-#include "Game.h"
+//#include "Game.h"
 #include "SimpleAudioEngine.h"
 #include <cstdlib>
 #include <ctime>
@@ -52,7 +52,7 @@ EnemyFish::EnemyFish(Scene* scene) {
 	else
 	{
 
-		enemyFishSprite->setScale(FISH_SCALE*Game::graphicsScale);
+		enemyFishSprite->setScale(FISH_SCALE*Spawner::graphicsScale);
 
 		enemyFishSprite->setPosition(GetRandomCoord());
 

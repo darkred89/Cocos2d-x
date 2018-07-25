@@ -25,6 +25,7 @@
 #ifndef __FISH_H__
 #define __FISH_H__
 
+//#include "Spawner.h"
 #include "cocos2d.h"
 #include <cmath> 
 
