@@ -60,6 +60,7 @@ void Spawner::SpawnEnemyFish()
 {
 	enemyFish = new EnemyFish(scene);
 	enemyFish->LookTo(playerFish->sprite->getPosition());
+	enemyFish->Activate();
 }
 
 void Spawner::SpawnBubble()
@@ -79,12 +80,16 @@ void Spawner::SpawnBubble()
 
 void Spawner::Run(float deltaTime) 
 {
-	if (bubbleInitialised) {
+	if (bubbleInitialised) 
+	{
 		bubble->Run(deltaTime);		
 		CheckBubbleCollide();
 	}
 	
-	enemyFish->Run(deltaTime);
+	if (enemyFish->active) 
+	{
+		enemyFish->Run(deltaTime);
+	}
 	
 	CheckFishCollide();
 	
@@ -100,8 +105,10 @@ void Spawner::CheckFishCollide() {
 void Spawner::CheckBubbleCollide() {
 	if (CollisionDetection(bubble->sprite, enemyFish->enemyFishSprite))
 	{
-		enemyFish->enemyFishSprite->setPosition(enemyFish->GetRandomCoord());
-		enemyFish->LookTo(playerFish->sprite->getPosition());
+		//enemyFish->enemyFishSprite->setPosition(enemyFish->GetRandomCoord());
+		//enemyFish->LookTo(playerFish->sprite->getPosition());
+		enemyFish->DeActivate();
+
 	}
 }
 

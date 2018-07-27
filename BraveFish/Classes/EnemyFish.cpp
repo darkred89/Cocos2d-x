@@ -64,6 +64,18 @@ EnemyFish::EnemyFish(Scene* scene) {
 	}
 }
 
+void EnemyFish::Activate() {
+	active = true;
+	enemyFishSprite->setPosition(GetRandomCoord());
+	LookTo(target);
+}
+
+void EnemyFish::DeActivate() {
+	active = false;
+	enemyFishSprite->setPosition(GetRandomCoord());
+	LookTo(target);
+}
+
 Vec2 EnemyFish::GetRandomCoord() {
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -102,12 +114,14 @@ Vec2 EnemyFish::GetRandomCoord() {
 
 void EnemyFish::LookTo(Vec2 point) {
 
-	log("Begin look to");
+	target = Vec2(point.x, point.y);
+
+	//log("Begin look to");
 
 	float x = point.x - enemyFishSprite->getPosition().x;;
 	float y = point.y - enemyFishSprite->getPosition().y;
 
-	target = new Vec2(enemyFishSprite->getPosition().x, enemyFishSprite->getPosition().y);
+
 
 	angle = atan2(x, y) * 180 / M_PI;
 	

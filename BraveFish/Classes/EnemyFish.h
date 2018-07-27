@@ -36,17 +36,22 @@ public:
 
 	cocos2d::Sprite* enemyFishSprite;
 	EnemyFish(cocos2d::Scene* scene);
-	cocos2d::Vec2* target;
 	
+	
+	bool active;
 	int n;
 	float angle;
 	int speed;
 	void Run(float);
-
+	void Activate();
+	void DeActivate();
 	void LookTo(cocos2d::Vec2);
 
-	cocos2d::Vec2 GetRandomCoord();
+	
+private:
 
+	cocos2d::Vec2 target;
+	cocos2d::Vec2 GetRandomCoord();
 };
 
 #endif // __HELLOWORLD_SCENE_H__
