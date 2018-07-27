@@ -28,8 +28,9 @@
 //#include "Spawner.h"
 #include "cocos2d.h"
 #include <cmath> 
+#include "Components.h"
 
-class Fish
+class Fish : public Moving
 {
 public:
 
@@ -42,7 +43,7 @@ public:
 
 	void Turn();
 	
-	void LookTo(cocos2d::Vec2);
+	//void LookTo(cocos2d::Vec2);
 };
 
 #endif // __HELLOWORLD_SCENE_H__

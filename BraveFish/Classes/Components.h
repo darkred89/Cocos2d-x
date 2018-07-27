@@ -22,88 +22,18 @@
  THE SOFTWARE.
  ****************************************************************************/
 
+#ifndef __COMPONENTS_H__
+#define __COMPONENTS_H__
 
-#ifndef SPAWNER_H
-#define SPAWNER_H
+#include "cocos2d.h"
 
-#pragma once
-
-#define FISH_SCALE 0.15
-#define BUBBLE_SCALE 0.15
-#define TARGET_SCALE 0.15
-#define FISH_SPEED 20
-#define BUBBLE_SPEED 50
-
-#define RELOAD_TIME 2
-
-#define FISH_COUNT 100
-#define BUBBLE_COUNT 100
-
-
-#include "Fish.h"
-#include "EnemyFish.h"
-#include "Bubble.h"
-
-#include <cmath> 
-#include <stdlib.h> 
-#include <cstdlib>
-#include <ctime>
-
-class Spawner
+class Moving
 {
 public:
-
-	static float graphicsScale;
-
-	Spawner(cocos2d::Scene* _scene, float scale);
-
-	void Run(float deltaTime);
-
-	void SpawnFish();
-	void SpawnEnemyFish();
-	void SpawnBubble();
-
-	void TurnPlayerFish(cocos2d::Vec2 lookPos);
-	bool CollisionDetection(cocos2d::Sprite*, cocos2d::Sprite*);
-	
-	Bubble* bubble;
-
-	Fish* playerFish;
-	EnemyFish* enemyFish;
-
-private:
-	//Bubble* bubbleList[FISH_COUNT];
-	void CheckFishCollide();
-	void CheckBubbleCollide();
-
-	float fireCounter;
-	bool canFire;
-	
-	cocos2d::Scene* scene;
-};
-
-
-class EnemyFishHolder
-{
-public:
-	Fish* fishList[FISH_COUNT];
-
-};
-
-class BubbleHolder
-{
-public:
+	cocos2d::Sprite* movingSprite;
+	virtual void LookTo(cocos2d::Vec2 point);
 
 
 };
-
-class Animating
-{
-public:
-	cocos2d::Sprite* sprite;
-	virtual void Run(float deltaTime) {};
-
-};
-
 
 #endif // __HELLOWORLD_SCENE_H__

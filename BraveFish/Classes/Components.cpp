@@ -23,87 +23,33 @@
  ****************************************************************************/
 
 
-#ifndef SPAWNER_H
-#define SPAWNER_H
+//#include "cocos2d.h"
+#include "Components.h"
 
-#pragma once
+USING_NS_CC;
 
-#define FISH_SCALE 0.15
-#define BUBBLE_SCALE 0.15
-#define TARGET_SCALE 0.15
-#define FISH_SPEED 20
-#define BUBBLE_SPEED 50
+void Moving::LookTo(cocos2d::Vec2 point) {
 
-#define RELOAD_TIME 2
+	if (movingSprite == NULL) {
+		log("missing movingSprite to move");
+		return;
+	}
 
-#define FISH_COUNT 100
-#define BUBBLE_COUNT 100
-
-
-#include "Fish.h"
-#include "EnemyFish.h"
-#include "Bubble.h"
-
-#include <cmath> 
-#include <stdlib.h> 
-#include <cstdlib>
-#include <ctime>
-
-class Spawner
-{
-public:
-
-	static float graphicsScale;
-
-	Spawner(cocos2d::Scene* _scene, float scale);
-
-	void Run(float deltaTime);
-
-	void SpawnFish();
-	void SpawnEnemyFish();
-	void SpawnBubble();
-
-	void TurnPlayerFish(cocos2d::Vec2 lookPos);
-	bool CollisionDetection(cocos2d::Sprite*, cocos2d::Sprite*);
-	
-	Bubble* bubble;
-
-	Fish* playerFish;
-	EnemyFish* enemyFish;
-
-private:
-	//Bubble* bubbleList[FISH_COUNT];
-	void CheckFishCollide();
-	void CheckBubbleCollide();
-
-	float fireCounter;
-	bool canFire;
-	
-	cocos2d::Scene* scene;
-};
+	float x = point.x - movingSprite->getPosition().x;// - sprite->getContentSize().width;
+	float y = point.y - movingSprite->getPosition().y;// -sprite->getContentSize().width;
 
 
-class EnemyFishHolder
-{
-public:
-	Fish* fishList[FISH_COUNT];
 
-};
+	float angle = atan2(x, y) * 180 / M_PI;
 
-class BubbleHolder
-{
-public:
+	float currentRotation = angle;
 
+	log("x: %f", x);
+	log("y: %f", y);
+	log("angle: %f", angle);
 
-};
-
-class Animating
-{
-public:
-	cocos2d::Sprite* sprite;
-	virtual void Run(float deltaTime) {};
-
-};
+	movingSprite->setRotation(angle + 180);
+}
 
 
-#endif // __HELLOWORLD_SCENE_H__
+

@@ -46,13 +46,14 @@ Fish::Fish(Scene* scene) {
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	sprite = Sprite::create("fish.png");
+	movingSprite = sprite;
 	if (sprite == nullptr)
 	{
 		//
 	}
 	else
 	{
-
+		
 		sprite->setScale(FISH_SCALE*Spawner::graphicsScale);
 
 		sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
@@ -63,28 +64,28 @@ Fish::Fish(Scene* scene) {
 	currentRotation = 0;
 }
 
-void Fish::LookTo(Vec2 point) {
-
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
-	log("Begin look to");
-
-	float x = point.x - sprite->getPosition().x;// - sprite->getContentSize().width;
-	float y = point.y - sprite->getPosition().y;// -sprite->getContentSize().width;
-
-	
-
-	float angle = atan2(x, y) * 180 / M_PI;
-	
-	currentRotation = angle;
-
-	cocos2d::log("x: %f", x);
-	cocos2d::log("y: %f", y);
-	cocos2d::log("angle: %f", angle);
-
-	sprite->setRotation(angle+180);
-}
+//void Fish::LookTo(Vec2 point) {
+//
+//	//auto visibleSize = Director::getInstance()->getVisibleSize();
+//	//Vec2 origin = Director::getInstance()->getVisibleOrigin();
+//
+//	log("Begin look to");
+//
+//	float x = point.x - sprite->getPosition().x;// - sprite->getContentSize().width;
+//	float y = point.y - sprite->getPosition().y;// -sprite->getContentSize().width;
+//
+//	
+//
+//	float angle = atan2(x, y) * 180 / M_PI;
+//	
+//	currentRotation = angle;
+//
+//	cocos2d::log("x: %f", x);
+//	cocos2d::log("y: %f", y);
+//	cocos2d::log("angle: %f", angle);
+//
+//	sprite->setRotation(angle+180);
+//}
 
 void Fish::Turn() {
 
