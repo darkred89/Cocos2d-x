@@ -1,26 +1,3 @@
-/****************************************************************************
- Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
- 
- http://www.cocos2d-x.org
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- ****************************************************************************/
 
 #include "Bubble.h"
 #include "Spawner.h"
@@ -28,8 +5,17 @@
 
 USING_NS_CC;
 
+float sceneWidth;
+float sceneHeight;
 
-Bubble::Bubble(cocos2d::Scene* scene, cocos2d::Vec2 position, float rotation, int speed) {
+Bubble::Bubble(cocos2d::Scene* scene, cocos2d::Vec2 startPosition, cocos2d::Vec2 maxPosition, int id)
+{
+	//auto visibleSize = Director::getInstance()->getVisibleSize();
+	//Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	this->id = id;
+	maxPos = maxPosition;
+
 	sprite = Sprite::create("bubble.png");
 	if (sprite == nullptr)
 	{
@@ -39,17 +25,29 @@ Bubble::Bubble(cocos2d::Scene* scene, cocos2d::Vec2 position, float rotation, in
 	{
 		
 		sprite->setScale(BUBBLE_SCALE*Spawner::graphicsScale);
+		sprite->setPosition(startPosition);
 
-		angle = rotation;
+		//Moving settings
+		initialPos = startPosition;
+		movingSprite = sprite;
+		
+		//Animation settings
+		animatingSprite = sprite;
 
-		sprite->setPosition(position);
-		sprite->setRotation(rotation);
+		currentScale = Spawner::graphicsScale*BUBBLE_SCALE;
+		animIncrementScale = Spawner::graphicsScale*BUBBLE_ANIM_INCREMENT_SCALE;
+		animScalePeriod =2* M_PI/ BUBBLE_ANIM_SCALE_PERIOD;
 
-		angle = angle / 180 * M_PI; // to radians
+		//SettingUp map borders
 
-		this->speed = speed;
 
-		log("Bubble speed %f", this->speed);
+		//sprite->setRotation(rotation);
+
+		//angle = angle / 180 * M_PI; // to radians
+
+		//this->speed = speed;
+
+		//log("Bubble speed %f", this->speed);
 
 		// add the sprite as a child to this layer
 		scene->addChild(sprite, 1);
@@ -57,7 +55,9 @@ Bubble::Bubble(cocos2d::Scene* scene, cocos2d::Vec2 position, float rotation, in
 	counter = 0;
 }
 
-void Bubble::SetNewPos(cocos2d::Vec2 position, float rotation, int speed) {
+/*
+void Bubble::SetNewPos(cocos2d::Vec2 position, float rotation, int speed) 
+{
 
 		angle = rotation;
 
@@ -74,14 +74,43 @@ void Bubble::SetNewPos(cocos2d::Vec2 position, float rotation, int speed) {
 	counter = 0;
 }
 
+*/
 
-
-void Bubble::Run(float deltaTime) {
-	counter += deltaTime;
-	sprite->setPosition(Vec2(sprite->getPosition().x + speed * deltaTime*sin(angle), sprite->getPosition().y + speed * deltaTime*cos(angle)));
+void Bubble::Run(float deltaTime) 
+{
+	//counter += deltaTime;
+	//sprite->setPosition(Vec2(sprite->getPosition().x + speed * deltaTime*sin(angle), sprite->getPosition().y + speed * deltaTime*cos(angle)));
 	//enemyFishSprite->setScale(2);
-	sprite->setScale((TARGET_SCALE*(1 - sin(5.99*counter)) / 4 + TARGET_SCALE)*Spawner::graphicsScale);
+	//sprite->setScale((TARGET_SCALE*(1 - sin(5.99*counter)) / 4 + TARGET_SCALE)*Spawner::graphicsScale);
+	if (!active) return;
+	
+	Move(deltaTime);
+	AnimateScale(deltaTime);
+
+	if (CheckOutScreen()) {
+		DeActivate();
+	}
 }
+
+//override test - not working on android
+//void Bubble::AnimateScale(float deltaTime) 
+//{
+//	Animating::AnimateScale(deltaTime);
+//	//sprite->setScale(sprite->getScale() * 2);
+//}
+
+
+void Bubble::Activate() 
+{
+	active = true;
+}
+
+void Bubble::DeActivate() 
+{
+	active = false;
+	SetNewPos(initialPos,0,0);
+}
+
 
 
 

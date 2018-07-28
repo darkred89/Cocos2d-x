@@ -30,10 +30,38 @@
 class Moving
 {
 public:
+
+	float movingSpeed;
+	float turningSpeed;
+	cocos2d::Vec2 initialPos;
+	cocos2d::Vec2 maxPos;
+
+	float currentRotation;
+
 	cocos2d::Sprite* movingSprite;
 	virtual void LookTo(cocos2d::Vec2 point);
-
+	void SetNewPos(cocos2d::Vec2 position, float rotation, int speed);
+	void Move(float deltaTime);
+	bool CheckOutScreen();
 
 };
 
+
+class Animating
+{
+public:
+
+	cocos2d::Sprite* animatingSprite;
+
+	float currentScale;
+	float animIncrementScale;
+	float animScalePeriod;
+	virtual void AnimateScale(float deltaTime);
+	float counter;
+private:
+
+	
+	//virtual void Run(float deltaTime) {};
+
+};
 #endif // __HELLOWORLD_SCENE_H__

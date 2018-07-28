@@ -242,16 +242,15 @@ bool Game::onTouchBegan(Touch* touch, Event* event)
 {
 	if (gameOver) return true;
 	spawner->TurnPlayerFish(touch->getLocation());
-	spawner->SpawnBubble();
+	
 	//target->setPosition(touch->getLocation());
-
-
 	return true;
 }
 
 void Game::onTouchEnded(Touch* touch, Event* event)
 {
-	cocos2d::log("touch ended");
+	spawner->SpawnBubble();
+	//cocos2d::log("touch ended");
 	
 	//fish->LookTo(touch->getLocation());
 }

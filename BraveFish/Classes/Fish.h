@@ -37,10 +37,10 @@ public:
 	cocos2d::Sprite* sprite;
 	Fish(cocos2d::Scene* scene);
 	
-	float currentRotation;
+	//float currentRotation;
 	
-	int n;
-
+	//int n;
+	void Run(float deltaTime);
 	void Turn();
 	
 	//void LookTo(cocos2d::Vec2);

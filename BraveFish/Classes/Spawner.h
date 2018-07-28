@@ -28,8 +28,15 @@
 
 #pragma once
 
+#define INITIAL_POS_X -100
+#define INITIAL_POS_Y -100
+
 #define FISH_SCALE 0.15
+
 #define BUBBLE_SCALE 0.15
+#define BUBBLE_ANIM_INCREMENT_SCALE 0.05
+#define BUBBLE_ANIM_SCALE_PERIOD 1 //in seconds
+
 #define TARGET_SCALE 0.15
 #define FISH_SPEED 20
 #define BUBBLE_SPEED 50
@@ -54,6 +61,7 @@ class Spawner
 public:
 
 	static float graphicsScale;
+	static cocos2d::Vec2 maxCoord;
 
 	Spawner(cocos2d::Scene* _scene, float scale);
 
@@ -67,9 +75,10 @@ public:
 	bool CollisionDetection(cocos2d::Sprite*, cocos2d::Sprite*);
 	
 	Bubble* bubble;
-
 	Fish* playerFish;
 	EnemyFish* enemyFish;
+
+	
 
 private:
 	//Bubble* bubbleList[FISH_COUNT];
@@ -90,20 +99,23 @@ public:
 
 };
 
+struct BubbleNode
+{
+	Bubble* bubble;
+	Bubble* nextBubble;
+	//Bubble*	
+};
+
 class BubbleHolder
 {
 public:
+	BubbleNode FirstBubble;
+	BubbleNode LastBubble;
 
-
+	void Push(Bubble* bubble);
 };
 
-class Animating
-{
-public:
-	cocos2d::Sprite* sprite;
-	virtual void Run(float deltaTime) {};
 
-};
 
 
 #endif // __HELLOWORLD_SCENE_H__

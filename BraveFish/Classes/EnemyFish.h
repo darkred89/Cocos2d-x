@@ -29,24 +29,25 @@
 #include "cocos2d.h"
 #include <cmath> 
 #include <stdlib.h> 
+#include "Components.h"
 
-class EnemyFish
+class EnemyFish: public Moving, public Animating
 {
 public:
 
-	cocos2d::Sprite* enemyFishSprite;
+	cocos2d::Sprite* sprite;
 	EnemyFish(cocos2d::Scene* scene);
 	
 	
 	bool active;
-	int n;
-	float angle;
-	int speed;
+	//int n;
+	//float angle;
+	//int speed;
 	void Run(float);
 	void Activate();
 	void DeActivate();
-	void LookTo(cocos2d::Vec2);
-
+	//virtual void LookTo(cocos2d::Vec2) override;
+	void SetTarget(cocos2d::Vec2);
 	
 private:
 

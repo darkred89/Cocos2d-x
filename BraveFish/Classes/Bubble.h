@@ -26,21 +26,30 @@
 #define __BUBBLE_H__
 
 #include "cocos2d.h"
+#include "Components.h"
 
-class Bubble
+class Bubble: public Moving, public Animating
 {
 public:
 
 	cocos2d::Sprite* sprite;
-	Bubble(cocos2d::Scene* scene, cocos2d::Vec2 position, float rotation,int speed);
-	void SetNewPos(cocos2d::Vec2 position, float rotation, int speed);
-	cocos2d::Vec2* target;
-	float counter;
-	float angle;
-	int n;
-	int speed;
+	Bubble(cocos2d::Scene* scene, cocos2d::Vec2 position,cocos2d::Vec2 maxPosition,int id);
+	//void SetNewPos(cocos2d::Vec2 position, float rotation, int speed);
+	//cocos2d::Vec2* target;
+	//float counter;
+	//float angle;
+	//int n;
+	//int speed;
+
 	void Run(float);
-	
+	void Activate();
+	void DeActivate();
+
+	bool active;
+	int id;
+
+	//virtual void Bubble::AnimateScale(float deltaTime) override;
+
 };
 
 #endif // __HELLOWORLD_SCENE_H__

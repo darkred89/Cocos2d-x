@@ -36,18 +36,28 @@ USING_NS_CC;
 //float angle;
 
 float Spawner::graphicsScale;
+Vec2 Spawner::maxCoord;
+
 bool bubbleInitialised = false;
 float scaleQuadCoef;
 
 float fishCollideQuadRad;
 float bubbleCollideQuadRad;
 
+int bubbleCounter;
 
 Spawner::Spawner(Scene* _scene, float scale)
 {
 	scene = _scene;
 	graphicsScale = scale;
 	scaleQuadCoef = graphicsScale * graphicsScale*FISH_SCALE*FISH_SCALE;
+
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
+	maxCoord = Vec2(visibleSize.width + origin.x, visibleSize.height + origin.y);
+
+	bubbleCounter = 0;
 }
 
 void Spawner::SpawnFish()
@@ -59,22 +69,26 @@ void Spawner::SpawnFish()
 void Spawner::SpawnEnemyFish()
 {
 	enemyFish = new EnemyFish(scene);
-	enemyFish->LookTo(playerFish->sprite->getPosition());
+	//enemyFish->LookTo(playerFish->sprite->getPosition());
+	
+	enemyFish->SetTarget(playerFish->sprite->getPosition());
 	enemyFish->Activate();
 }
 
 void Spawner::SpawnBubble()
 {
+	//return;
+
 	if (!bubbleInitialised) 
 	{
-		bubble = new Bubble(scene, playerFish->sprite->getPosition(), playerFish->currentRotation, BUBBLE_SPEED);
-		bubbleInitialised = true;
+		bubble = new Bubble(scene, Vec2(INITIAL_POS_X,INITIAL_POS_Y), maxCoord, bubbleCounter);
+		//bubble->id = bubbleCounter;
+		bubbleCounter++;
+		bubbleInitialised = true;		
 	}
-	else 
-	{
-		bubble->SetNewPos(playerFish->sprite->getPosition(), playerFish->currentRotation, BUBBLE_SPEED);
-	}
-	
+
+	bubble->SetNewPos(playerFish->sprite->getPosition(), playerFish->currentRotation, BUBBLE_SPEED);
+	bubble->Activate();
 	
 }
 
@@ -82,11 +96,11 @@ void Spawner::Run(float deltaTime)
 {
 	if (bubbleInitialised) 
 	{
-		bubble->Run(deltaTime);		
+		bubble->Run(deltaTime);
 		CheckBubbleCollide();
 	}
 	
-	if (enemyFish->active) 
+	//if (enemyFish->active) 
 	{
 		enemyFish->Run(deltaTime);
 	}
@@ -96,19 +110,20 @@ void Spawner::Run(float deltaTime)
 }
 
 void Spawner::CheckFishCollide() {
-	if (CollisionDetection(playerFish->sprite, enemyFish->enemyFishSprite))
+	if (CollisionDetection(playerFish->sprite, enemyFish->sprite))
 	{
 		Game::gameOver = true;
 	}
 }
 
 void Spawner::CheckBubbleCollide() {
-	if (CollisionDetection(bubble->sprite, enemyFish->enemyFishSprite))
+	if (CollisionDetection(bubble->sprite, enemyFish->sprite))
 	{
 		//enemyFish->enemyFishSprite->setPosition(enemyFish->GetRandomCoord());
 		//enemyFish->LookTo(playerFish->sprite->getPosition());
 		enemyFish->DeActivate();
-
+		enemyFish->Activate();
+		bubble->DeActivate();
 	}
 }
 

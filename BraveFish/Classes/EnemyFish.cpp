@@ -45,34 +45,40 @@ EnemyFish::EnemyFish(Scene* scene) {
 	//auto visibleSize = Director::getInstance()->getVisibleSize();
 	//Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	//srand(seed);
-	enemyFishSprite = Sprite::create("badFish.png");
-	if (enemyFishSprite == nullptr)
+	sprite = Sprite::create("badFish.png");
+	if (sprite == nullptr)
 	{
 		//
 	}
 	else
 	{
 
-		enemyFishSprite->setScale(FISH_SCALE*Spawner::graphicsScale);
+		sprite->setScale(FISH_SCALE*Spawner::graphicsScale);
+		sprite->setPosition(GetRandomCoord());
 
-		enemyFishSprite->setPosition(GetRandomCoord());
+		movingSprite = sprite;
+		SetNewPos(GetRandomCoord(), 0, 0);
 
 		//sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 
 		// add the sprite as a child to this layer
-		scene->addChild(enemyFishSprite, 1);
+		scene->addChild(sprite, 1);
 	}
 }
 
 void EnemyFish::Activate() {
-	active = true;
-	enemyFishSprite->setPosition(GetRandomCoord());
+	
+	//enemyFishSprite->setPosition(GetRandomCoord());
+	
+	SetNewPos(GetRandomCoord(), 0, FISH_SPEED);
 	LookTo(target);
+
+	active = true;
 }
 
 void EnemyFish::DeActivate() {
 	active = false;
-	enemyFishSprite->setPosition(GetRandomCoord());
+	SetNewPos(GetRandomCoord(), 0, 0);
 	LookTo(target);
 }
 
@@ -83,27 +89,27 @@ Vec2 EnemyFish::GetRandomCoord() {
 	
 	int side = rand() % 4;
 
-	speed = FISH_SPEED + rand() % FISH_SPEED;
+	//speed = FISH_SPEED + rand() % FISH_SPEED;
 	//srand(time(0));
 
 	Vec2 randomPos = Vec2(0, 0);
 	switch (side)
 	{
 		case 0: //TOP
-			randomPos.y = visibleSize.height+origin.y;
-			randomPos.x= rand() % static_cast<int>(visibleSize.width);
+			randomPos.y = Spawner::maxCoord.y;// visibleSize.height + origin.y;
+			randomPos.x= rand() % static_cast<int>(Spawner::maxCoord.x);
 			break;
 		case 1: //RIGH
-			randomPos.y = rand() % static_cast<int>(visibleSize.height);
-			randomPos.x = visibleSize.width+origin.x;
+			randomPos.y = rand() % static_cast<int>(Spawner::maxCoord.y);
+			randomPos.x = Spawner::maxCoord.x;// visibleSize.width + origin.x;
 			break;
 		case 2: //BOTTOM
-			randomPos.y = origin.y;
-			randomPos.x = rand() % static_cast<int>(visibleSize.width);
+			randomPos.y = 0;// origin.y;
+			randomPos.x = rand() % static_cast<int>(Spawner::maxCoord.x);
 			break;
 		case 3: //LEFT
-			randomPos.y = rand() % static_cast<int>(visibleSize.height);
-			randomPos.x = origin.x;
+			randomPos.y = rand() % static_cast<int>(Spawner::maxCoord.y);
+			randomPos.x = 0;// origin.x;
 			break;
 	}
 
@@ -112,8 +118,10 @@ Vec2 EnemyFish::GetRandomCoord() {
 	return randomPos;
 }
 
-void EnemyFish::LookTo(Vec2 point) {
 
+void EnemyFish::SetTarget(Vec2 point) {
+
+	/*
 	target = Vec2(point.x, point.y);
 
 	//log("Begin look to");
@@ -131,12 +139,18 @@ void EnemyFish::LookTo(Vec2 point) {
 
 	enemyFishSprite->setRotation(angle+180);
 	angle = angle / 180 * M_PI; // to radians
+	*/
+	target = point;
+	Moving::LookTo(point);
 }
+
 
 void EnemyFish::Run(float deltaTime) {
 
-	enemyFishSprite->setPosition(Vec2(enemyFishSprite->getPosition().x + speed * deltaTime*sin(angle), enemyFishSprite->getPosition().y + speed * deltaTime*cos(angle)));
+	if (!active) return;
+	//enemyFishSprite->setPosition(Vec2(enemyFishSprite->getPosition().x + speed * deltaTime*sin(angle), enemyFishSprite->getPosition().y + speed * deltaTime*cos(angle)));
 	//enemyFishSprite->setScale(2);
+	Move(deltaTime);
 }
 
 

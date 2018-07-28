@@ -90,7 +90,7 @@ Fish::Fish(Scene* scene) {
 void Fish::Turn() {
 
 
-	n++;
+	//n++;
 	currentRotation += FISH_TURN_RATE;
 	sprite->setRotation(currentRotation);
 
