@@ -10,7 +10,7 @@
 #define FISH_SCALE 0.15
 #define FISH_IMAGE "fish.png"
 #define FISH_BUBBLE_IMAGE "fishBubble.png"
-#define FISH_TURN_RATE 3
+#define FISH_TURN_RATE 160 //in grads
 #define ENEMY_FISH_IMAGE "badFish.png"
 #define RELOAD_TIME 0.3
 #define FISH_FIREANIM_TIME RELOAD_TIME*0.6
@@ -20,7 +20,7 @@
 #define BUBBLE_ANIM_SCALE_PERIOD 1 //in seconds
 
 #define TARGET_SCALE 0.15
-#define FISH_SPEED 20
+#define FISH_SPEED 15
 #define BUBBLE_SPEED 100
 #define BUBBLE_IMAGE "bubble.png"
 
@@ -39,27 +39,7 @@
 #include <stdlib.h> 
 #include <cstdlib>
 #include <ctime>
-/*
-struct BubbleNode
-{
-	Bubble* bubble;
-	BubbleNode* nextBubbleNode;
-	//Bubble*	
-};
 
-class BubbleHolder
-{
-public:
-	BubbleNode * bubbleNode;
-
-	BubbleNode * FirstBubbleNode;
-	BubbleNode* LastBubbleNode;
-
-	BubbleHolder(Bubble* fisrtBubble);
-
-	void Push(Bubble* bubble);
-};
-*/
 class BubbleHolder :public PoolHolder
 {
 public:
@@ -93,7 +73,6 @@ public:
 	GameObject* target;
 
 	Fish* playerFish;
-	//EnemyFish* enemyFish;
 
 	BubbleHolder* bubbleHolder;
 	PoolHolderNode* bubbleNode;

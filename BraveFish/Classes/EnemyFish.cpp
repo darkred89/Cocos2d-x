@@ -25,8 +25,10 @@ void EnemyFish::Init(cocos2d::Vec2 startPos, float startRotation, float scale)
 void EnemyFish::Activate() 
 {	
 	GameObject::Activate();
-	SetNewPos(GetRandomCoord(), 0, FISH_SPEED);
-	LookTo(target);
+	SetNewPos(GetRandomCoord(), 0, FISH_SPEED+ rand() % FISH_SPEED);
+	currentRotation = LookTo(target);
+	setRotation(currentRotation+180);
+	currentRotation= currentRotation / 180 * M_PI;
 }
 
 void EnemyFish::DeActivate() 

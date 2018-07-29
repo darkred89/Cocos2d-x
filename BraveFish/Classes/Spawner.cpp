@@ -113,10 +113,8 @@ void Spawner::TouchEnded()
 
 void Spawner::CheckTouch()
 {
-	if (!CheckEnemyFishTouched(touchPos)) return;
-	
-	SpawnBubble();
-	
+	if (!CheckEnemyFishTouched(touchPos)) return;	
+	SpawnBubble();	
 }
 
 bool Spawner::CheckEnemyFishTouched(Vec2 touchPos)
@@ -127,20 +125,15 @@ bool Spawner::CheckEnemyFishTouched(Vec2 touchPos)
 	{
 		return true;
 	}
-	//if(CollisionDetection(target,enemyFish)) return true;
-	//else return false;
 	return false;
 }
 
 void Spawner::SpawnBubble()
 {
-	//return;/*
-	
-	//playerFish->setTexture(FISH_BUBBLE_IMAGE);
-
 	if (reloadingTime > 0) return;
 
-	playerFish->AnimateSprite(FISH_IMAGE, FISH_BUBBLE_IMAGE, FISH_FIREANIM_TIME);
+	if(playerFish->active) 
+		playerFish->AnimateSprite(FISH_IMAGE, FISH_BUBBLE_IMAGE, FISH_FIREANIM_TIME);
 
 	reloadingTime = RELOAD_TIME;
 
@@ -156,42 +149,7 @@ void Spawner::SpawnBubble()
 		bubbleCounter++;
 		bubbleHolder->Push(nextBubble);
 		nextBubble->Activate();
-	}
-	/*
-	bool gotBubble = false;
-	//BubbleNode* currentBubbleNode = bubbleHolder->FirstBubbleNode;
-	PoolHolderNode* currentBubbleNode = bubbleHolder->FirstNode;
-	while (!gotBubble) 
-	{		
-		if (!currentBubbleNode->gameObject->active) 
-		{
-			//currentBubbleNode->gameObject->SetNewPos(playerFish->getPosition(), playerFish->currentRotation, BUBBLE_SPEED);
-			currentBubbleNode->gameObject->Activate();
-			gotBubble = true;
-			//log("Fired bubble %d", currentBubbleNode->bubble->id);
-		}
-		else if (currentBubbleNode->nextNode != NULL) 
-		{
-			currentBubbleNode = currentBubbleNode->nextNode;
-			continue;
-		}
-		else
-		{
-			//BubbleNode* newBubbleNode = new BubbleNode();	
-			PoolHolderNode* newBubbleNode = new PoolHolderNode();
-			Bubble* newBubble = new Bubble("bubble.png", scene, bubbleCounter);
-			newBubble->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale,playerFish);
-			bubbleCounter++;
-
-			newBubbleNode->gameObject = newBubble;
-			newBubbleNode->nextNode = NULL;
-			bubbleHolder->Push(newBubble);
-			currentBubbleNode = newBubbleNode;
-			continue;
-		}
-	}
-	*/
-	
+	}	
 }
 
 void Spawner::Run(float deltaTime) 
@@ -200,11 +158,12 @@ void Spawner::Run(float deltaTime)
 	playerFish->Run(deltaTime);
 	RunBubbles(deltaTime);
 	RunEnemyFishes(deltaTime);
-	//enemyFish->Run(deltaTime);
 	
 	CheckBubbleCollide();
+
 	if (CheckFishCollide(playerFish,false))
 	{
+		playerFish->DeActivate();
 		Game::gameOver = true;
 	}
 
@@ -303,7 +262,7 @@ void Spawner::CheckBubbleCollide()
 void Spawner::TurnPlayerFish(Vec2 lookPos)
 {
 	if (!playerFish->active) return;
-	playerFish->LookTo(lookPos);
+	playerFish->Turn(playerFish->LookTo(lookPos) +180);
 }
 
 bool Spawner::CollisionDetection(cocos2d::Sprite* sprite1, cocos2d::Sprite* sprite2) 
@@ -334,26 +293,5 @@ BubbleHolder::BubbleHolder(GameObject* fisrtBubble):PoolHolder::PoolHolder(fisrt
 
 EnemyFishHolder::EnemyFishHolder(GameObject* fisrtEnemyFish) : PoolHolder::PoolHolder(fisrtEnemyFish) {}
 
-/*
-void BubbleHolder::Push(Bubble* bubble) 
-{
-	bubbleNode = new BubbleNode();
-	bubbleNode->bubble = bubble;
-	bubbleNode->nextBubbleNode = NULL;
-
-	LastBubbleNode->nextBubbleNode =  bubbleNode;
-	LastBubbleNode = bubbleNode;
-}
-
-BubbleHolder::BubbleHolder(Bubble* firstBubble) 
-{
-	bubbleNode = new BubbleNode();
-	bubbleNode->bubble = firstBubble;
-	bubbleNode->nextBubbleNode = NULL;
-
-	FirstBubbleNode = bubbleNode;
-	LastBubbleNode = bubbleNode;
-}
-*/
 
 

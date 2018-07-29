@@ -33,7 +33,7 @@ public:
 	float currentRotation;
 	GameObject* movingSprite;
 
-	virtual void LookTo(cocos2d::Vec2 point);
+	virtual float LookTo(cocos2d::Vec2 point);
 	void SetNewPos(cocos2d::Vec2 position, float rotation, int speed);
 	void Move(float deltaTime);
 	bool CheckOutScreen();

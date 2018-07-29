@@ -18,17 +18,69 @@ void Fish::Init(cocos2d::Vec2 startPos, float startRotation, float scale)
 	SetNewPos(startPos, 0, 0);
 	animatingSprite = this;
 	counter = 0;
+	currentRotation = 0;
+	lookToRotation = 0;
+	turning = false;
 }
 
-void Fish::Turn() 
+void Fish::Turn(float rotation) 
 {
-	currentRotation += FISH_TURN_RATE;
-	sprite->setRotation(currentRotation);
+	lookToRotation = rotation;
+
+	float clockR = lookToRotation - currentRotation;
+	float aClockR = currentRotation + (360 - lookToRotation);
+
+	CheckAngleOuntOfBounds(&clockR);
+	CheckAngleOuntOfBounds(&aClockR);
+
+	log("fish current rotation %f", currentRotation);
+	log("fish look rotation %f", lookToRotation);
+	log("fish clockR rotation %f", clockR);
+	log("fish aClockR rotation %f", aClockR);
+
+	if (clockR > aClockR)
+	{
+		deltaRotation = -FISH_TURN_RATE;
+	}
+	else
+	{
+		deltaRotation=FISH_TURN_RATE;
+	}
+	turning = true;
 }
 
 void Fish::Run(float deltaTime)
 {
 	Animate(deltaTime);
+	
+	if (!turning) return;
+
+	CheckAngleOuntOfBounds(&currentRotation);
+
+	if (abs(currentRotation - lookToRotation) < FISH_TURN_RATE*deltaTime)
+	{
+		currentRotation = lookToRotation;
+		turning = false;
+	}
+	else
+	{
+		currentRotation += deltaRotation*deltaTime;
+	}
+
+	setRotation(currentRotation);
+}
+
+void Fish::CheckAngleOuntOfBounds(float* angle)
+{
+	if (*angle < 0)
+	{
+		*angle += 360;
+	}
+
+	if (*angle > 360.0f)
+	{
+		*angle -= 360;
+	}
 }
 
 

@@ -14,10 +14,6 @@ Scene* Game::createScene()
     return scene;
 }
 
-Label label;
-int counter=0;
-Sprite target;
-
 bool Game::gameOver;
 
 static void problemLoading(const char* filename)
@@ -33,13 +29,12 @@ bool Game::init()
         return false;
     }
 
-	InitialSetup();
-
 	srand(time(NULL));
 
+	InitialSetup();
+
 	spawner =new Spawner(this,graphicsScale);
-	spawner->SpawnEnemyFish();
-	
+
 	this->scheduleUpdate();
 
 	auto touchListener = EventListenerTouchOneByOne::create();
@@ -54,6 +49,7 @@ bool Game::init()
     return true;
 }
 
+//Labels and menu
 void Game::InitialSetup() 
 {
 	auto director = cocos2d::Director::getInstance();
@@ -89,16 +85,16 @@ void Game::InitialSetup()
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 2);
 
-	label = Label::createWithTTF("Kill them!", "fonts/Marker Felt.ttf", 24);
-	if (label == nullptr)
+	mainLabel = Label::createWithTTF("Kill them!", "fonts/Marker Felt.ttf", 24);
+	if (mainLabel == nullptr)
 	{
 		problemLoading("'fonts/Marker Felt.ttf'");
 	}
 	else
 	{
-		label->setPosition(Vec2(origin.x + visibleSize.width / 2,
-		origin.y + visibleSize.height - label->getContentSize().height));
-		this->addChild(label, 2);
+		mainLabel->setPosition(Vec2(origin.x + visibleSize.width / 2,
+		origin.y + visibleSize.height - mainLabel->getContentSize().height));
+		this->addChild(mainLabel, 2);
 	}
 
 	auto sprite = Sprite::create("background.png");
@@ -132,7 +128,7 @@ void GotoMainMenu()
 
 void Game::GameOver() 
 {
-	label->setString("GameOver");
+	mainLabel->setString("GameOver");
 	float delay = 2.0f;
 	auto delayAction = DelayTime::create(delay);  // For 2 Seconds of Delay
 	auto funcCallback = CallFunc::create([]() {GotoMainMenu(); });
@@ -142,14 +138,12 @@ void Game::GameOver()
 bool Game::onTouchBegan(Touch* touch, Event* event)
 {
 	if (gameOver) return true;
-	//spawner->TurnPlayerFish(touch->getLocation());
 	spawner->SetTouch(touch->getLocation());
 	return true;
 }
 
 void Game::onTouchEnded(Touch* touch, Event* event)
 {
-	//spawner->SpawnBubble();
 	spawner->TouchEnded();
 }
 
@@ -157,7 +151,6 @@ void Game::onTouchMoved(Touch* touch, Event* event)
 {
 	if (gameOver) return;
 	spawner->SetTouch(touch->getLocation());
-	//spawner->TurnPlayerFish(touch->getLocation());
 }
 
 void Game::onTouchCancelled(Touch* touch, Event* event)

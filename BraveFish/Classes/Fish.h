@@ -15,8 +15,14 @@ public:
 
 	virtual void Run(float deltaTime);
 	virtual void Init(cocos2d::Vec2 startPos, float startRotation, float scale);
-	void Turn();
+	void Turn(float rotation);
 
+	float lookToRotation;
+	float deltaRotation;
+private:
+
+	bool turning;
+	void CheckAngleOuntOfBounds(float* angle);
 };
 
 #endif

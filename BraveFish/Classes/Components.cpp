@@ -40,23 +40,24 @@ void GameObject::DeActivate()
 
 #pragma region Moving
 
-void Moving::LookTo(cocos2d::Vec2 point) 
+float Moving::LookTo(cocos2d::Vec2 point) 
 {
 	if (movingSprite == NULL) {
 		log("missing movingSprite to move");
-		return;
+		return 0;
 	}
 
 	float x = point.x - movingSprite->getPosition().x;// - sprite->getContentSize().width;
 	float y = point.y - movingSprite->getPosition().y;// -sprite->getContentSize().width;
 
-	currentRotation = atan2(x, y) * 180 / M_PI;
+	//currentRotation = atan2(x, y) * 180 / M_PI;
 
+	return atan2(x, y) * 180 / M_PI;
 	//log("current rotation: %f", currentRotation);
 
-	movingSprite->setRotation(currentRotation + 180);
+	//movingSprite->setRotation(currentRotation + 180);
 
-	currentRotation = currentRotation / 180 * M_PI; // to radians
+	//currentRotation = currentRotation / 180 * M_PI; // to radians
 }
 
 void Moving::SetNewPos(cocos2d::Vec2 position, float rotation, int speed) 
@@ -102,10 +103,9 @@ void Animating::AnimateScale(float currentScale, float animIncrementScale, float
 }
 
 void Animating::RunAnimateScale()
-{
-	
+{	
 	animatingSprite->setScale(animIncrementScale*(1 - sin(animScalePeriod*counter)) + currentScale);
-	log("bubble scale %f",animatingSprite->getScale());
+	//log("bubble scale %f",animatingSprite->getScale());
 }
 
 void Animating::Animate(float deltaTime)
