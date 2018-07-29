@@ -1,38 +1,7 @@
-/****************************************************************************
- Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
- 
- http://www.cocos2d-x.org
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- ****************************************************************************/
-//#define TARGET_SCALE 0.2
-
 
 #include "Game.h"
 #include "SimpleAudioEngine.h"
 #include "MainMenu.h"
-
-#include <sstream>
-
-
-//#define SSTR( x ) static_cast< std::ostringstream & >( \
-//        ( std::ostringstream() << std::dec << x ) ).str()
 
 USING_NS_CC;
 
@@ -47,24 +16,18 @@ Scene* Game::createScene()
 
 Label label;
 int counter=0;
-//Fish* fish;
-//EnemyFish* enemyFish[ENEMY_COUNT];
 Sprite target;
 
 bool Game::gameOver;
 
-// Print useful error message instead of segfaulting when files are not there.
 static void problemLoading(const char* filename)
 {
     printf("Error while loading: %s\n", filename);
     printf("Depending on how you compiled you might have to add 'Resources/' in front of filenames in HelloWorldScene.cpp\n");
 }
 
-// on "init" you need to initialize your instance
 bool Game::init()
 {
-    //////////////////////////////
-    // 1. super init first
     if ( !Scene::init() )
     {
         return false;
@@ -75,15 +38,11 @@ bool Game::init()
 	srand(time(NULL));
 
 	spawner =new Spawner(this,graphicsScale);
-	spawner->SpawnFish();
 	spawner->SpawnEnemyFish();
-
 	
-
 	this->scheduleUpdate();
 
 	auto touchListener = EventListenerTouchOneByOne::create();
-
 	touchListener->onTouchBegan = CC_CALLBACK_2(Game::onTouchBegan, this);
 	touchListener->onTouchEnded = CC_CALLBACK_2(Game::onTouchEnded, this);
 	touchListener->onTouchMoved = CC_CALLBACK_2(Game::onTouchMoved, this);
@@ -92,12 +51,11 @@ bool Game::init()
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
 	gameOver = false;
-
     return true;
 }
 
-void Game::InitialSetup() {
-
+void Game::InitialSetup() 
+{
 	auto director = cocos2d::Director::getInstance();
 	auto width = cocos2d::Size(director->getOpenGLView()->getFrameSize()).width;
 	auto height = cocos2d::Size(director->getOpenGLView()->getFrameSize()).height;
@@ -107,11 +65,6 @@ void Game::InitialSetup() {
 
 	graphicsScale = 1.0 *width / 960;
 
-	/////////////////////////////
-	// 2. add a menu item with "X" image, which is clicked to quit the program
-	//    you may modify it.
-
-	// add a "close" icon to exit the progress. it's an autorelease object
 	auto closeItem = MenuItemImage::create(
 		"CloseNormal.png",
 		"CloseSelected.png",
@@ -131,16 +84,10 @@ void Game::InitialSetup() {
 		closeItem->setPosition(Vec2(x, y));
 	}
 
-	// create menu, it's an autorelease object
+	// create menu
 	auto menu = Menu::create(closeItem, NULL);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 2);
-
-	/////////////////////////////
-	// 3. add your codes below...
-
-	// add a label shows "Hello World"
-	// create and initialize a label
 
 	label = Label::createWithTTF("Kill them!", "fonts/Marker Felt.ttf", 24);
 	if (label == nullptr)
@@ -149,15 +96,11 @@ void Game::InitialSetup() {
 	}
 	else
 	{
-		// position the label on the center of the screen
 		label->setPosition(Vec2(origin.x + visibleSize.width / 2,
-			origin.y + visibleSize.height - label->getContentSize().height));
-
-		// add the label as a child to this layer
+		origin.y + visibleSize.height - label->getContentSize().height));
 		this->addChild(label, 2);
 	}
 
-	// add "HelloWorld" splash screen"
 	auto sprite = Sprite::create("background.png");
 	if (sprite == nullptr)
 	{
@@ -165,105 +108,56 @@ void Game::InitialSetup() {
 	}
 	else
 	{
-		// position the sprite on the center of the screen
 		sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-
-
 		sprite->setScale(graphicsScale);
-		// add the sprite as a child to this layer
 		this->addChild(sprite, 0);
 	}
-
-	//target = Sprite::create("bubble.png");
-	//if (target == nullptr)
-	//{
-	//	problemLoading("'bubble.png'");
-	//}
-	//else
-	//{
-	//	// position the sprite on the center of the screen
-	//	target->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-	//	target->setScale(TARGET_SCALE*graphicsScale);
-	//	// add the sprite as a child to this layer
-	//	this->addChild(target, 0);
-	//}
-
-
-	//label->setString("rrr");
-
 }
 
 void Game::update(float delta)
 {
 	spawner->Run(delta);
-	//for (int i = 0; i < ENEMY_COUNT; i++) {
-	//	enemyFish[i]->Run(delta);
-	//}
 	
 	if (gameOver) 
 	{
 		GameOver();
-
 		return;
 	}
-	//test update	
-
-	//std::string s = SSTR("Frames passed: " << counter);
-
-	//label->setString(s);
-	//counter++;
-	//fish->Turn();
-
-	//CollisionDetection(fish->sprite, enemyFish[0]->enemyFishSprite);
-
-	//Bubble bubble
-	//target->setScale((TARGET_SCALE*(1-sin(0.99*counter/10))/4 + TARGET_SCALE)*graphicsScale);
 }
 
-void GotoMainMenu() {
+void GotoMainMenu() 
+{
 	Director::getInstance()->replaceScene(TransitionFade::create(1, MainMenu::createScene(), Color3B(255, 255, 255)));
 }
 
-void Game::GameOver() {
-
-	//log("GameOver");
+void Game::GameOver() 
+{
 	label->setString("GameOver");
-	//CallFunc *runCallback = CallFunc::create(this, callfunc_selector(GotoMainMenu));
 	float delay = 2.0f;
 	auto delayAction = DelayTime::create(delay);  // For 2 Seconds of Delay
 	auto funcCallback = CallFunc::create([]() {GotoMainMenu(); });
 	this->runAction(Sequence::create(delayAction, funcCallback, NULL));
-
 }
-
-
 
 bool Game::onTouchBegan(Touch* touch, Event* event)
 {
 	if (gameOver) return true;
-	spawner->TurnPlayerFish(touch->getLocation());
-	
-	//target->setPosition(touch->getLocation());
+	//spawner->TurnPlayerFish(touch->getLocation());
+	spawner->SetTouch(touch->getLocation());
 	return true;
 }
 
 void Game::onTouchEnded(Touch* touch, Event* event)
 {
-	spawner->SpawnBubble();
-	//cocos2d::log("touch ended");
-	
-	//fish->LookTo(touch->getLocation());
+	//spawner->SpawnBubble();
+	spawner->TouchEnded();
 }
 
 void Game::onTouchMoved(Touch* touch, Event* event)
 {
 	if (gameOver) return;
-
-	spawner->TurnPlayerFish(touch->getLocation());
-
-//	fish->LookTo(touch->getLocation());
-	//target->setPosition(touch->getLocation());
-	//cocos2d::log("touch moved");
+	spawner->SetTouch(touch->getLocation());
+	//spawner->TurnPlayerFish(touch->getLocation());
 }
 
 void Game::onTouchCancelled(Touch* touch, Event* event)
@@ -271,24 +165,11 @@ void Game::onTouchCancelled(Touch* touch, Event* event)
 	//cocos2d::log("touch cancelled");
 }
 
-
-
-
 void Game::menuCloseCallback(Ref* pSender)
 {
-    //Close the cocos2d-x game scene and quit the application
-    //Director::getInstance()->end();
-
 	Director::getInstance()->replaceScene(TransitionFade::create(1, MainMenu::createScene(), Color3B(255, 255, 255)));
 
     #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)
     exit(0);
-#endif
-
-    /*To navigate back to native iOS screen(if present) without quitting the application  ,do not use Director::getInstance()->end() and exit(0) as given above,instead trigger a custom event created in RootViewController.mm as below*/
-
-    //EventCustom customEndEvent("game_scene_close_event");
-    //_eventDispatcher->dispatchEvent(&customEndEvent);
-
-
+	#endif
 }

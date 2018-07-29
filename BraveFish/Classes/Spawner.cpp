@@ -1,39 +1,9 @@
-/****************************************************************************
- Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
- 
- http://www.cocos2d-x.org
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- ****************************************************************************/
-
 
 #include "Spawner.h"
 #include "cocos2d.h"
 #include "Game.h"
 
 USING_NS_CC;
-
-//Sprite* EnemyFish::sprite;
-//int n;
-//Vec2 EnemyFish : :target;
-
-//float angle;
 
 float Spawner::graphicsScale;
 Vec2 Spawner::maxCoord;
@@ -45,15 +15,26 @@ float fishCollideQuadRad;
 float bubbleCollideQuadRad;
 
 int bubbleCounter;
+int enemyFishCounter;
+int spawnCounter;
+int spawnAmount;
+float spawnCooldown;
 
 float reloadingTime;
 
+bool touching;
+
 Spawner::Spawner(Scene* _scene, float scale)
 {
-	//GameObject* testObject =new  GameObject("fish.png", _scene, Vec2(50, 50));
-
 	reloadingTime = 0;
 	bubbleCounter = 0;
+	enemyFishCounter = 0;
+	spawnCounter = 0;
+	spawnAmount = 1;
+	spawnCooldown = 0;
+
+	touching = false;
+	touchPos = Vec2(0, 0);
 
 	scene = _scene;
 	graphicsScale = scale;
@@ -64,20 +45,28 @@ Spawner::Spawner(Scene* _scene, float scale)
 
 	maxCoord = Vec2(visibleSize.width + origin.x, visibleSize.height + origin.y);
 
-	//bubble = new Bubble(scene, Vec2(INITIAL_POS_X, INITIAL_POS_Y), maxCoord, bubbleCounter);
-	Bubble* newBubble = new Bubble("bubble.png", scene, bubbleCounter);
-	newBubble->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale);
+	SpawnFish();
+
+	Bubble* newBubble = new Bubble(BUBBLE_IMAGE, scene, bubbleCounter);
+	newBubble->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale,playerFish);
 	bubbleCounter++;
+	bubbleHolder = new BubbleHolder(newBubble);	
 
-	bubbleHolder = new BubbleHolder(newBubble);
+	EnemyFish* newEnemyFish = new EnemyFish("badFish.png", scene, enemyFishCounter);
+	newEnemyFish->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, FISH_SCALE*graphicsScale);
+	newEnemyFish->SetTarget(playerFish->getPosition());
+	enemyFishCounter++;
+	enemyFishHolder = new EnemyFishHolder(newEnemyFish);
 
-	
+	target = new GameObject(BUBBLE_IMAGE, scene, 0);
+	target->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, BUBBLE_SCALE*graphicsScale*0.3);
+	target->setOpacity(0);
 }
 
 void Spawner::SpawnFish()
 {
 	//return;
-	playerFish =  new Fish("fish.png",scene,1);
+	playerFish =  new Fish(FISH_IMAGE,scene,1);
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -89,159 +78,217 @@ void Spawner::SpawnFish()
 
 void Spawner::SpawnEnemyFish()
 {
-	enemyFish =  new EnemyFish("badFish.png", scene, 1);
-	//enemyFish->LookTo(playerFish->sprite->getPosition());
-	enemyFish->Init(Vec2(-100, -100), 0, FISH_SCALE*graphicsScale);
-	//enemyFish->SetTarget(playerFish->sprite->getPosition());
-	//enemyFish->SetTarget(Vec2(200, 200));
-	enemyFish->SetTarget(playerFish->getPosition());
-	enemyFish->Activate();
+	//enemyFish =  new EnemyFish("badFish.png", scene, 1);
+	//enemyFish->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, FISH_SCALE*graphicsScale);
+	//enemyFish->SetTarget(playerFish->getPosition());
+	//enemyFish->Activate();
+
+	GameObject* newEnemyFish = enemyFishHolder->GetFreeGameObject();
+
+	if (newEnemyFish != NULL) {
+		newEnemyFish->Activate();
+	}
+	else
+	{
+		EnemyFish* nextEnemyFish = new EnemyFish("badFish.png", scene, 1);
+		nextEnemyFish->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, FISH_SCALE*graphicsScale);
+		enemyFishCounter++;
+		enemyFishHolder->Push(nextEnemyFish);
+		nextEnemyFish->SetTarget(playerFish->getPosition());
+		nextEnemyFish->Activate();
+	}
+}
+
+void Spawner::SetTouch(Vec2 touchPos)
+{	
+	touching = true;
+	TurnPlayerFish(touchPos);
+	this->touchPos = touchPos;
+}
+
+void Spawner::TouchEnded()
+{
+	touching = false;
+}
+
+void Spawner::CheckTouch()
+{
+	if (!CheckEnemyFishTouched(touchPos)) return;
+	SpawnBubble();
+}
+
+bool Spawner::CheckEnemyFishTouched(Vec2 touchPos)
+{
+	target->setPosition(touchPos);
+
+	//if(CollisionDetection(target,enemyFish)) return true;
+	//else return false;
+	return true;
 }
 
 void Spawner::SpawnBubble()
 {
-	//return;
-	playerFish->setTexture("fishBubble.png");
+	//return;/*
+	
+	playerFish->setTexture(FISH_BUBBLE_IMAGE);
 
 	if (reloadingTime > 0) return;
-	//return;
 
-	/*
-	if (!bubbleInitialised) 
-	{
-		bubble = new Bubble(scene, Vec2(INITIAL_POS_X,INITIAL_POS_Y), maxCoord, bubbleCounter);
-		//bubble->id = bubbleCounter;
-		bubbleCounter++;
-		bubbleInitialised = true;		
-	}
-
-	bubble->SetNewPos(playerFish->sprite->getPosition(), playerFish->currentRotation, BUBBLE_SPEED);
-	bubble->Activate();
-	*/
 	reloadingTime = RELOAD_TIME;
 
+	GameObject* newBubble = bubbleHolder->GetFreeGameObject();
+
+	if (newBubble != NULL) {
+		newBubble->Activate();
+	}
+	else 
+	{
+		Bubble* nextBubble = new Bubble("bubble.png", scene, bubbleCounter);
+		nextBubble->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale, playerFish);
+		bubbleCounter++;
+		bubbleHolder->Push(nextBubble);
+		nextBubble->Activate();
+	}
+	/*
 	bool gotBubble = false;
-
-	BubbleNode* currentBubbleNode = bubbleHolder->FirstBubbleNode;
-
-	while (!gotBubble) {
-		
-		if (!currentBubbleNode->bubble->active) {
-
-			currentBubbleNode->bubble->SetNewPos(playerFish->getPosition(), playerFish->currentRotation, BUBBLE_SPEED);
-			currentBubbleNode->bubble->Activate();
+	//BubbleNode* currentBubbleNode = bubbleHolder->FirstBubbleNode;
+	PoolHolderNode* currentBubbleNode = bubbleHolder->FirstNode;
+	while (!gotBubble) 
+	{		
+		if (!currentBubbleNode->gameObject->active) 
+		{
+			//currentBubbleNode->gameObject->SetNewPos(playerFish->getPosition(), playerFish->currentRotation, BUBBLE_SPEED);
+			currentBubbleNode->gameObject->Activate();
 			gotBubble = true;
-			log("Fired bubble %d", currentBubbleNode->bubble->id);
+			//log("Fired bubble %d", currentBubbleNode->bubble->id);
 		}
-		else if (currentBubbleNode->nextBubbleNode != NULL) {
-			currentBubbleNode = currentBubbleNode->nextBubbleNode;
+		else if (currentBubbleNode->nextNode != NULL) 
+		{
+			currentBubbleNode = currentBubbleNode->nextNode;
 			continue;
 		}
 		else
 		{
-			BubbleNode* newBubbleNode = new BubbleNode();
-			
-			//Bubble* newBubble =new Bubble(scene, Vec2(INITIAL_POS_X, INITIAL_POS_Y), maxCoord, bubbleCounter);
+			//BubbleNode* newBubbleNode = new BubbleNode();	
+			PoolHolderNode* newBubbleNode = new PoolHolderNode();
 			Bubble* newBubble = new Bubble("bubble.png", scene, bubbleCounter);
-			newBubble->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale);
+			newBubble->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale,playerFish);
 			bubbleCounter++;
 
-			newBubbleNode->bubble = newBubble;
-			newBubbleNode->nextBubbleNode = NULL;
-
+			newBubbleNode->gameObject = newBubble;
+			newBubbleNode->nextNode = NULL;
 			bubbleHolder->Push(newBubble);
-
 			currentBubbleNode = newBubbleNode;
 			continue;
 		}
-		//bubbleHolder.FirstBubbleNode->bubble
-
 	}
+	*/
 	
 }
 
 void Spawner::Run(float deltaTime) 
 {
-	//if (bubbleInitialised) 
-	//{
-	//	bubble->Run(deltaTime);
-	//	CheckBubbleCollide();
-	//}
-	
+	SpawnDecide(deltaTime);
+
 	RunBubbles(deltaTime);
-	//if (enemyFish->active) 
-	{
-		enemyFish->Run(deltaTime);
-	}
+	RunEnemyFishes(deltaTime);
+	//enemyFish->Run(deltaTime);
 	
 	CheckBubbleCollide();
-	CheckFishCollide();
-	
+	if (CheckFishCollide(playerFish,false))
+	{
+		Game::gameOver = true;
+	}
 
 	if (reloadingTime > 0) {
 		reloadingTime -= deltaTime;
 	}
+
+	if (touching)
+	{
+		CheckTouch();
+	}
+}
+
+void Spawner::SpawnDecide(float deltaTime)
+{
+	if (spawnCooldown <= 0)
+	{
+		for (int i = 0; i < spawnAmount; i++) 
+		{
+			SpawnEnemyFish();
+		}
+		spawnCounter++;
+		if (spawnCounter > FISH_SPAWN_COUNTER_INCREASE)
+		{
+			spawnCounter = 0;
+			spawnAmount++;
+		}
+		spawnCooldown = FISH_SPAWN_DELAY;
+	}
+	spawnCooldown -= deltaTime;
+}
+
+void Spawner::RunEnemyFishes(float deltaTime)
+{
+	enemyFishHolder->RunObjects(deltaTime);
 }
 
 void Spawner::RunBubbles(float deltaTime)
+{	
+	bubbleHolder->RunObjects(deltaTime);
+}
+
+bool Spawner::CheckFishCollide(GameObject* gameObject, bool deactivateFish) 
 {
-	bool runBubbles = true;
-
-	bubbleNode = bubbleHolder->FirstBubbleNode;
-
-	while (runBubbles)
+	bool runFishCollide = true;
+	enemyFishNode = enemyFishHolder->FirstNode;
+	while (runFishCollide)
 	{
-		if (bubbleNode->bubble->active) bubbleNode->bubble->Run(deltaTime);
-
-		if (bubbleNode->nextBubbleNode == NULL)
+		if (enemyFishNode->gameObject->active)
 		{
-			runBubbles = false;
-		}
-		else
-		{
-			bubbleNode = bubbleNode->nextBubbleNode;
-		}
-	}
-}
-
-void Spawner::CheckFishCollide() {
-	if (CollisionDetection(playerFish, enemyFish))
-	{
-		Game::gameOver = true;
-	}
-}
-
-void Spawner::CheckBubbleCollide() {
-
-	bool runBubbles = true;
-
-	bubbleNode = bubbleHolder->FirstBubbleNode;
-
-	while (runBubbles)
-	{
-		if (bubbleNode->bubble->active)
-		{
-			//bubbleNode->bubble->Run(deltaTime);
-			if (CollisionDetection(bubbleNode->bubble, enemyFish))
+			if (CollisionDetection(enemyFishNode->gameObject, gameObject))
 			{
-				//enemyFish->enemyFishSprite->setPosition(enemyFish->GetRandomCoord());
-				//enemyFish->LookTo(playerFish->sprite->getPosition());
-				enemyFish->DeActivate();
-				enemyFish->Activate();
-				bubbleNode->bubble->DeActivate();
+				if (deactivateFish) enemyFishNode->gameObject->DeActivate();
+				return true;
 			}
 		}
+		if (enemyFishNode->nextNode == NULL)
+		{
+			runFishCollide = false;
+		}
+		else
+		{
+			enemyFishNode = enemyFishNode->nextNode;
+		}
+	}
+	return false;
+}
 
-		if (bubbleNode->nextBubbleNode == NULL)
+void Spawner::CheckBubbleCollide() 
+{
+	
+	bool runBubbles = true;
+	bubbleNode = bubbleHolder->FirstNode;
+	while (runBubbles)
+	{
+		if (bubbleNode->gameObject->active)
+		{
+			if(CheckFishCollide(bubbleNode->gameObject,true))
+			{
+				bubbleNode->gameObject->DeActivate();
+				return;
+			}
+		}	
+		if (bubbleNode->nextNode == NULL)
 		{
 			runBubbles = false;
 		}
 		else
 		{
-			bubbleNode = bubbleNode->nextBubbleNode;
+			bubbleNode = bubbleNode->nextNode;
 		}
 	}
-
 	
 }
 
@@ -251,8 +298,8 @@ void Spawner::TurnPlayerFish(Vec2 lookPos)
 	playerFish->LookTo(lookPos);
 }
 
-bool Spawner::CollisionDetection(cocos2d::Sprite* sprite1, cocos2d::Sprite* sprite2) {
-
+bool Spawner::CollisionDetection(cocos2d::Sprite* sprite1, cocos2d::Sprite* sprite2) 
+{
 	Rect rect1 = sprite1->getBoundingBox();
 	Rect rect2 = sprite2->getBoundingBox();
 
@@ -267,26 +314,31 @@ bool Spawner::CollisionDetection(cocos2d::Sprite* sprite1, cocos2d::Sprite* spri
 
 	if ((xA - xB)*(xA - xB) + (yA - yB)*(yA - yB) < ((rA + rB)*(rA + rB))*scaleQuadCoef)
 	{
-		log("Collided");
+		//log("Collided");
 		return true;
 	}
 
 	return false;
 }
 
-void BubbleHolder::Push(Bubble* bubble) {
 
+BubbleHolder::BubbleHolder(GameObject* fisrtBubble):PoolHolder::PoolHolder(fisrtBubble){}
+
+EnemyFishHolder::EnemyFishHolder(GameObject* fisrtEnemyFish) : PoolHolder::PoolHolder(fisrtEnemyFish) {}
+
+/*
+void BubbleHolder::Push(Bubble* bubble) 
+{
 	bubbleNode = new BubbleNode();
-
 	bubbleNode->bubble = bubble;
 	bubbleNode->nextBubbleNode = NULL;
 
 	LastBubbleNode->nextBubbleNode =  bubbleNode;
-
 	LastBubbleNode = bubbleNode;
 }
 
-BubbleHolder::BubbleHolder(Bubble* firstBubble) {
+BubbleHolder::BubbleHolder(Bubble* firstBubble) 
+{
 	bubbleNode = new BubbleNode();
 	bubbleNode->bubble = firstBubble;
 	bubbleNode->nextBubbleNode = NULL;
@@ -294,5 +346,6 @@ BubbleHolder::BubbleHolder(Bubble* firstBubble) {
 	FirstBubbleNode = bubbleNode;
 	LastBubbleNode = bubbleNode;
 }
+*/
 
 

@@ -10,58 +10,19 @@ float sceneHeight;
 
 Bubble::Bubble(std::string fileName, cocos2d::Scene* scene, int id) :GameObject::GameObject(fileName, scene, id)//Bubble(cocos2d::Scene* scene, cocos2d::Vec2 startPosition, cocos2d::Vec2 maxPosition, int id)
 {
-	/*
-	//auto visibleSize = Director::getInstance()->getVisibleSize();
-	//Vec2 origin = Director::getInstance()->getVisibleOrigin();
-	active = false;
 
-	this->id = id;
-	maxPos = maxPosition;
-
-	sprite = Sprite::create("bubble.png");
-	
-	if (sprite == nullptr)
-	{
-		//
-	}
-	else
-	{
-		
-		sprite->setScale(BUBBLE_SCALE*Spawner::graphicsScale);
-		sprite->setPosition(startPosition);
-		//sprite->
-		//Moving settings
-		initialPos = startPosition;
-		//movingSprite = sprite;
-		
-		//Animation settings
-		animatingSprite = sprite;
-
-		currentScale = Spawner::graphicsScale*BUBBLE_SCALE;
-		animIncrementScale = Spawner::graphicsScale*BUBBLE_ANIM_INCREMENT_SCALE;
-		animScalePeriod =2* M_PI/ BUBBLE_ANIM_SCALE_PERIOD;
-
-		//SettingUp map borders
-
-
-		//sprite->setRotation(rotation);
-
-		//angle = angle / 180 * M_PI; // to radians
-
-		//this->speed = speed;
-
-		//log("Bubble speed %f", this->speed);
-
-		// add the sprite as a child to this layer
-		scene->addChild(sprite, 1);
-	}
-	counter = 0;
-	*/
 }
-void Bubble::Init(cocos2d::Vec2 startPos, float startRotation, cocos2d::Vec2 maxPosition, float scale)
+
+void Bubble::Init(cocos2d::Vec2 startPos, float startRotation, cocos2d::Vec2 maxPosition, float scale, GameObject* playerFish)
 {
 	GameObject::Init(startPos, startRotation, scale);
 	movingSprite = this;
+	//this->playerFish = playerFish;
+	this->playerFish=playerFish;
+	animatingSprite = this;
+	currentScale = Spawner::graphicsScale*BUBBLE_SCALE;
+	animIncrementScale = Spawner::graphicsScale*BUBBLE_ANIM_INCREMENT_SCALE;
+	animScalePeriod = 2 * M_PI / BUBBLE_ANIM_SCALE_PERIOD;
 
 	maxPos = maxPosition;
 	initialPos = startPos;
@@ -69,36 +30,12 @@ void Bubble::Init(cocos2d::Vec2 startPos, float startRotation, cocos2d::Vec2 max
 	SetNewPos(startPos, 0, 0);
 
 	active = false;
-}
 
-
-/*
-void Bubble::SetNewPos(cocos2d::Vec2 position, float rotation, int speed) 
-{
-
-		angle = rotation;
-
-		sprite->setPosition(position);
-		sprite->setRotation(rotation);
-
-		angle = angle / 180 * M_PI; // to radians
-
-		this->speed = speed;
-
-		log("Bubble speed %f", this->speed);
-
-		// add the sprite as a child to this layer
 	counter = 0;
 }
 
-*/
-
 void Bubble::Run(float deltaTime) 
 {
-	//counter += deltaTime;
-	//sprite->setPosition(Vec2(sprite->getPosition().x + speed * deltaTime*sin(angle), sprite->getPosition().y + speed * deltaTime*cos(angle)));
-	//enemyFishSprite->setScale(2);
-	//sprite->setScale((TARGET_SCALE*(1 - sin(5.99*counter)) / 4 + TARGET_SCALE)*Spawner::graphicsScale);
 	if (!active) return;
 	
 	Move(deltaTime);
@@ -109,22 +46,25 @@ void Bubble::Run(float deltaTime)
 	}
 }
 
-//override test - not working on android
+//override test
 void Bubble::AnimateScale(float deltaTime) 
 {
-	//Animating::AnimateScale(deltaTime);
+	Animating::AnimateScale(deltaTime);
 	//sprite->setScale(sprite->getScale() * 2);
 }
 
-
 void Bubble::Activate() 
 {
-	active = true;
+	SetNewPos(playerFish->getPosition(), playerFish->getRotation() / 180 * M_PI+ M_PI, BUBBLE_SPEED);
+	//log("current rotation: %f", playerFish->currentRotation);
+	//log("get rotation: %f", playerFish->getRotation());
+	GameObject::Activate();
 }
 
 void Bubble::DeActivate() 
 {
-	active = false;
+	GameObject::DeActivate();
+	counter = 0;
 	SetNewPos(initialPos,0,0);
 }
 

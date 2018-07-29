@@ -1,27 +1,3 @@
-/****************************************************************************
- Copyright (c) 2017-2018 Xiamen Yaji Software Co., Ltd.
- 
- http://www.cocos2d-x.org
- 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
- 
- The above copyright notice and this permission notice shall be included in
- all copies or substantial portions of the Software.
- 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- THE SOFTWARE.
- ****************************************************************************/
-
 
 #ifndef SPAWNER_H
 #define SPAWNER_H
@@ -32,7 +8,11 @@
 #define INITIAL_POS_Y -100
 
 #define FISH_SCALE 0.15
-#define RELOAD_TIME 0.2
+#define FISH_IMAGE "fish.png"
+#define FISH_BUBBLE_IMAGE "fishBubble.png"
+#define FISH_TURN_RATE 3
+#define ENEMY_FISH_IMAGE "badFish.png"
+#define RELOAD_TIME 0.5
 
 #define BUBBLE_SCALE 0.15
 #define BUBBLE_ANIM_INCREMENT_SCALE 0.05
@@ -41,9 +21,11 @@
 #define TARGET_SCALE 0.15
 #define FISH_SPEED 20
 #define BUBBLE_SPEED 50
+#define BUBBLE_IMAGE "bubble.png"
 
 
-
+#define FISH_SPAWN_DELAY 2
+#define FISH_SPAWN_COUNTER_INCREASE 4
 #define FISH_COUNT 100
 #define BUBBLE_COUNT 100
 
@@ -56,16 +38,7 @@
 #include <stdlib.h> 
 #include <cstdlib>
 #include <ctime>
-
-
-
-class EnemyFishHolder
-{
-public:
-	Fish * fishList[FISH_COUNT];
-
-};
-
+/*
 struct BubbleNode
 {
 	Bubble* bubble;
@@ -84,13 +57,24 @@ public:
 	BubbleHolder(Bubble* fisrtBubble);
 
 	void Push(Bubble* bubble);
-
 };
+*/
+class BubbleHolder :public PoolHolder
+{
+public:
+	BubbleHolder(GameObject* fisrtBubble);
+};
+
+class EnemyFishHolder :public PoolHolder
+{
+public:
+	EnemyFishHolder(GameObject* fisrtEnemyFish);
+};
+
 
 class Spawner
 {
 public:
-
 	static float graphicsScale;
 	static cocos2d::Vec2 maxCoord;
 
@@ -102,33 +86,40 @@ public:
 	void SpawnEnemyFish();
 	void SpawnBubble();
 
-	void TurnPlayerFish(cocos2d::Vec2 lookPos);
-	bool CollisionDetection(cocos2d::Sprite*, cocos2d::Sprite*);
+	void SetTouch(cocos2d::Vec2 touchPos);
+	void TouchEnded();
 	
-	Bubble* bubble;
+	GameObject* target;
+
 	Fish* playerFish;
-	EnemyFish* enemyFish;
+	//EnemyFish* enemyFish;
 
 	BubbleHolder* bubbleHolder;
-
-	BubbleNode * bubbleNode;
+	PoolHolderNode* bubbleNode;
 	
+	EnemyFishHolder* enemyFishHolder;
+	PoolHolderNode* enemyFishNode;
 
 private:
-	//Bubble* bubbleList[FISH_COUNT];
-	void CheckFishCollide();
+	void TurnPlayerFish(cocos2d::Vec2 lookPos);
+	bool CollisionDetection(cocos2d::Sprite*, cocos2d::Sprite*);	
+
+	void CheckTouch();
+	bool CheckFishCollide(GameObject* gameObject, bool deactivateFish);
 	void CheckBubbleCollide();
+	bool CheckEnemyFishTouched(cocos2d::Vec2 touchPos);
 
 	void RunBubbles(float deltaTime);
+	void RunEnemyFishes(float deltaTime);
+	void SpawnDecide(float deltaTime);
 
 	float fireCounter;
 	bool canFire;
-	
+	int currentSpawnQuantity;
+
+	cocos2d::Vec2 touchPos;
+
 	cocos2d::Scene* scene;
 };
 
-
-
-
-
-#endif // __HELLOWORLD_SCENE_H__
+#endif
