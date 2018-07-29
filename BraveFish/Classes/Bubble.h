@@ -17,8 +17,6 @@ public:
 	virtual void Activate();
 	virtual void DeActivate();
 
-	//virtual void AnimateScale(float deltaTime) override;
-
 	GameObject* playerFish;
 };
 

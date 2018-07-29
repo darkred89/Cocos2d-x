@@ -1,6 +1,6 @@
 
 #include "EnemyFish.h"
-#include "Spawner.h"
+#include "GameController.h"
 #include "SimpleAudioEngine.h"
 #include <cstdlib>
 #include <ctime>
@@ -45,19 +45,19 @@ Vec2 EnemyFish::GetRandomCoord()
 	switch (side)
 	{
 		case 0: //TOP
-			randomPos.y = Spawner::maxCoord.y;
-			randomPos.x= rand() % static_cast<int>(Spawner::maxCoord.x);
+			randomPos.y = GameController::maxCoord.y;
+			randomPos.x= rand() % static_cast<int>(GameController::maxCoord.x);
 			break;
 		case 1: //RIGH
-			randomPos.y = rand() % static_cast<int>(Spawner::maxCoord.y);
-			randomPos.x = Spawner::maxCoord.x;
+			randomPos.y = rand() % static_cast<int>(GameController::maxCoord.y);
+			randomPos.x = GameController::maxCoord.x;
 			break;
 		case 2: //BOTTOM
 			randomPos.y = 0;// origin.y;
-			randomPos.x = rand() % static_cast<int>(Spawner::maxCoord.x);
+			randomPos.x = rand() % static_cast<int>(GameController::maxCoord.x);
 			break;
 		case 3: //LEFT
-			randomPos.y = rand() % static_cast<int>(Spawner::maxCoord.y);
+			randomPos.y = rand() % static_cast<int>(GameController::maxCoord.y);
 			randomPos.x = 0;
 			break;
 	}

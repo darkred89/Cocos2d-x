@@ -1,6 +1,6 @@
 
 #include "Bubble.h"
-#include "Spawner.h"
+#include "GameController.h"
 #include "SimpleAudioEngine.h"
 
 USING_NS_CC;
@@ -21,7 +21,7 @@ void Bubble::Init(cocos2d::Vec2 startPos, float startRotation, cocos2d::Vec2 max
 	this->playerFish=playerFish;
 	animatingSprite = this;
 
-	AnimateScale(Spawner::graphicsScale*BUBBLE_SCALE,Spawner::graphicsScale*BUBBLE_ANIM_INCREMENT_SCALE, BUBBLE_ANIM_SCALE_PERIOD);
+	AnimateScale(GameController::graphicsScale*BUBBLE_SCALE, GameController::graphicsScale*BUBBLE_ANIM_INCREMENT_SCALE, BUBBLE_ANIM_SCALE_PERIOD);
 
 	maxPos = maxPosition;
 	initialPos = startPos;
@@ -44,13 +44,6 @@ void Bubble::Run(float deltaTime)
 		DeActivate();
 	}
 }
-
-////override test
-//void Bubble::AnimateScale(float deltaTime) 
-//{
-//	Animating::AnimateScale(deltaTime);
-//	//sprite->setScale(sprite->getScale() * 2);
-//}
 
 void Bubble::Activate() 
 {

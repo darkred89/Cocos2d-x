@@ -1,6 +1,6 @@
 
 #include "Fish.h"
-#include "Spawner.h"
+#include "GameController.h"
 #include "SimpleAudioEngine.h"
 
 USING_NS_CC;
@@ -33,10 +33,10 @@ void Fish::Turn(float rotation)
 	CheckAngleOuntOfBounds(&clockR);
 	CheckAngleOuntOfBounds(&aClockR);
 
-	log("fish current rotation %f", currentRotation);
-	log("fish look rotation %f", lookToRotation);
-	log("fish clockR rotation %f", clockR);
-	log("fish aClockR rotation %f", aClockR);
+	//log("fish current rotation %f", currentRotation);
+	//log("fish look rotation %f", lookToRotation);
+	//log("fish clockR rotation %f", clockR);
+	//log("fish aClockR rotation %f", aClockR);
 
 	if (clockR > aClockR)
 	{
