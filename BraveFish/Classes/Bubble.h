@@ -28,12 +28,15 @@
 #include "cocos2d.h"
 #include "Components.h"
 
-class Bubble: public Moving, public Animating
+class Bubble:public GameObject, public Moving, public Animating
 {
 public:
 
 	cocos2d::Sprite* sprite;
-	Bubble(cocos2d::Scene* scene, cocos2d::Vec2 position,cocos2d::Vec2 maxPosition,int id);
+	//Bubble(cocos2d::Scene* scene, cocos2d::Vec2 position,cocos2d::Vec2 maxPosition,int id);
+	Bubble(std::string fileName, cocos2d::Scene* scene, int id);
+	virtual void Init(cocos2d::Vec2 startPos, float startRotation, cocos2d::Vec2 maxPosition, float scale);
+
 	//void SetNewPos(cocos2d::Vec2 position, float rotation, int speed);
 	//cocos2d::Vec2* target;
 	//float counter;
@@ -41,14 +44,14 @@ public:
 	//int n;
 	//int speed;
 
-	void Run(float);
-	void Activate();
-	void DeActivate();
+	virtual void Run(float);
+	virtual void Activate();
+	virtual void DeActivate();
 
-	bool active;
-	int id;
+	//bool active;
+	//int id;
 
-	//virtual void Bubble::AnimateScale(float deltaTime) override;
+	virtual void AnimateScale(float deltaTime) override;
 
 };
 

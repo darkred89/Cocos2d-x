@@ -8,15 +8,18 @@ USING_NS_CC;
 float sceneWidth;
 float sceneHeight;
 
-Bubble::Bubble(cocos2d::Scene* scene, cocos2d::Vec2 startPosition, cocos2d::Vec2 maxPosition, int id)
+Bubble::Bubble(std::string fileName, cocos2d::Scene* scene, int id) :GameObject::GameObject(fileName, scene, id)//Bubble(cocos2d::Scene* scene, cocos2d::Vec2 startPosition, cocos2d::Vec2 maxPosition, int id)
 {
+	/*
 	//auto visibleSize = Director::getInstance()->getVisibleSize();
 	//Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	active = false;
 
 	this->id = id;
 	maxPos = maxPosition;
 
 	sprite = Sprite::create("bubble.png");
+	
 	if (sprite == nullptr)
 	{
 		//
@@ -26,10 +29,10 @@ Bubble::Bubble(cocos2d::Scene* scene, cocos2d::Vec2 startPosition, cocos2d::Vec2
 		
 		sprite->setScale(BUBBLE_SCALE*Spawner::graphicsScale);
 		sprite->setPosition(startPosition);
-
+		//sprite->
 		//Moving settings
 		initialPos = startPosition;
-		movingSprite = sprite;
+		//movingSprite = sprite;
 		
 		//Animation settings
 		animatingSprite = sprite;
@@ -53,7 +56,21 @@ Bubble::Bubble(cocos2d::Scene* scene, cocos2d::Vec2 startPosition, cocos2d::Vec2
 		scene->addChild(sprite, 1);
 	}
 	counter = 0;
+	*/
 }
+void Bubble::Init(cocos2d::Vec2 startPos, float startRotation, cocos2d::Vec2 maxPosition, float scale)
+{
+	GameObject::Init(startPos, startRotation, scale);
+	movingSprite = this;
+
+	maxPos = maxPosition;
+	initialPos = startPos;
+
+	SetNewPos(startPos, 0, 0);
+
+	active = false;
+}
+
 
 /*
 void Bubble::SetNewPos(cocos2d::Vec2 position, float rotation, int speed) 
@@ -93,11 +110,11 @@ void Bubble::Run(float deltaTime)
 }
 
 //override test - not working on android
-//void Bubble::AnimateScale(float deltaTime) 
-//{
-//	Animating::AnimateScale(deltaTime);
-//	//sprite->setScale(sprite->getScale() * 2);
-//}
+void Bubble::AnimateScale(float deltaTime) 
+{
+	//Animating::AnimateScale(deltaTime);
+	//sprite->setScale(sprite->getScale() * 2);
+}
 
 
 void Bubble::Activate() 

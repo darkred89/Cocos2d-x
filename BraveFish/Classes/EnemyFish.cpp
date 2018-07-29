@@ -41,6 +41,7 @@ USING_NS_CC;
 
 //float angle;
 
+/*
 EnemyFish::EnemyFish(Scene* scene) {
 	//auto visibleSize = Director::getInstance()->getVisibleSize();
 	//Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -64,6 +65,18 @@ EnemyFish::EnemyFish(Scene* scene) {
 		// add the sprite as a child to this layer
 		scene->addChild(sprite, 1);
 	}
+}
+*/
+EnemyFish::EnemyFish(std::string fileName, cocos2d::Scene* scene, int id):GameObject::GameObject(fileName, scene, id)
+{
+	
+}
+
+void EnemyFish::Init(cocos2d::Vec2 startPos, float startRotation, float scale)
+{
+	GameObject::Init(startPos, startRotation, scale);
+	movingSprite = this;
+	SetNewPos(GetRandomCoord(), 0, 0);
 }
 
 void EnemyFish::Activate() {

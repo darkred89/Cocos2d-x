@@ -26,7 +26,24 @@
 #define __COMPONENTS_H__
 
 #include "cocos2d.h"
+//All game objects
+class GameObject: public cocos2d::Sprite
+{
+public:
 
+	GameObject(std::string fileName,cocos2d::Scene* scene,int id);
+
+	virtual void Init(cocos2d::Vec2 startPos, float startRotation, float scale);
+
+	virtual void Run(float);
+	virtual void Activate();
+	virtual void DeActivate();
+	//
+	bool active;
+	int id;
+};
+
+///Basic moving
 class Moving
 {
 public:
@@ -38,7 +55,9 @@ public:
 
 	float currentRotation;
 
-	cocos2d::Sprite* movingSprite;
+	//cocos2d::Sprite* movingSprite;
+	GameObject* movingSprite;
+
 	virtual void LookTo(cocos2d::Vec2 point);
 	void SetNewPos(cocos2d::Vec2 position, float rotation, int speed);
 	void Move(float deltaTime);
@@ -46,7 +65,7 @@ public:
 
 };
 
-
+//Basic animating
 class Animating
 {
 public:

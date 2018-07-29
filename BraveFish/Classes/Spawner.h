@@ -32,6 +32,7 @@
 #define INITIAL_POS_Y -100
 
 #define FISH_SCALE 0.15
+#define RELOAD_TIME 0.2
 
 #define BUBBLE_SCALE 0.15
 #define BUBBLE_ANIM_INCREMENT_SCALE 0.05
@@ -41,7 +42,7 @@
 #define FISH_SPEED 20
 #define BUBBLE_SPEED 50
 
-#define RELOAD_TIME 2
+
 
 #define FISH_COUNT 100
 #define BUBBLE_COUNT 100
@@ -55,6 +56,36 @@
 #include <stdlib.h> 
 #include <cstdlib>
 #include <ctime>
+
+
+
+class EnemyFishHolder
+{
+public:
+	Fish * fishList[FISH_COUNT];
+
+};
+
+struct BubbleNode
+{
+	Bubble* bubble;
+	BubbleNode* nextBubbleNode;
+	//Bubble*	
+};
+
+class BubbleHolder
+{
+public:
+	BubbleNode * bubbleNode;
+
+	BubbleNode * FirstBubbleNode;
+	BubbleNode* LastBubbleNode;
+
+	BubbleHolder(Bubble* fisrtBubble);
+
+	void Push(Bubble* bubble);
+
+};
 
 class Spawner
 {
@@ -78,6 +109,9 @@ public:
 	Fish* playerFish;
 	EnemyFish* enemyFish;
 
+	BubbleHolder* bubbleHolder;
+
+	BubbleNode * bubbleNode;
 	
 
 private:
@@ -85,35 +119,14 @@ private:
 	void CheckFishCollide();
 	void CheckBubbleCollide();
 
+	void RunBubbles(float deltaTime);
+
 	float fireCounter;
 	bool canFire;
 	
 	cocos2d::Scene* scene;
 };
 
-
-class EnemyFishHolder
-{
-public:
-	Fish* fishList[FISH_COUNT];
-
-};
-
-struct BubbleNode
-{
-	Bubble* bubble;
-	Bubble* nextBubble;
-	//Bubble*	
-};
-
-class BubbleHolder
-{
-public:
-	BubbleNode FirstBubble;
-	BubbleNode LastBubble;
-
-	void Push(Bubble* bubble);
-};
 
 
 

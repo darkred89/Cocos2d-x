@@ -41,27 +41,17 @@ USING_NS_CC;
 //float currentRotation;
 //int n;
 
-Fish::Fish(Scene* scene) {
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+Fish::Fish(std::string fileName, cocos2d::Scene* scene, int id):GameObject::GameObject(fileName, scene, id) 
+{
 
-	sprite = Sprite::create("fish.png");
-	movingSprite = sprite;
-	if (sprite == nullptr)
-	{
-		//
-	}
-	else
-	{
-		
-		sprite->setScale(FISH_SCALE*Spawner::graphicsScale);
+}
 
-		sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+void Fish::Init(cocos2d::Vec2 startPos, float startRotation, float scale)
+{
+	GameObject::Init(startPos, startRotation, scale);
+	movingSprite = this;
 
-		// add the sprite as a child to this layer
-		scene->addChild(sprite, 0);
-	}
-	currentRotation = 0;
+	SetNewPos(startPos, 0, 0);
 }
 
 //void Fish::LookTo(Vec2 point) {

@@ -46,8 +46,15 @@ float bubbleCollideQuadRad;
 
 int bubbleCounter;
 
+float reloadingTime;
+
 Spawner::Spawner(Scene* _scene, float scale)
 {
+	//GameObject* testObject =new  GameObject("fish.png", _scene, Vec2(50, 50));
+
+	reloadingTime = 0;
+	bubbleCounter = 0;
+
 	scene = _scene;
 	graphicsScale = scale;
 	scaleQuadCoef = graphicsScale * graphicsScale*FISH_SCALE*FISH_SCALE;
@@ -57,28 +64,49 @@ Spawner::Spawner(Scene* _scene, float scale)
 
 	maxCoord = Vec2(visibleSize.width + origin.x, visibleSize.height + origin.y);
 
-	bubbleCounter = 0;
+	//bubble = new Bubble(scene, Vec2(INITIAL_POS_X, INITIAL_POS_Y), maxCoord, bubbleCounter);
+	Bubble* newBubble = new Bubble("bubble.png", scene, bubbleCounter);
+	newBubble->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale);
+	bubbleCounter++;
+
+	bubbleHolder = new BubbleHolder(newBubble);
+
+	
 }
 
 void Spawner::SpawnFish()
 {
-	playerFish =  new Fish(scene);
-	
+	//return;
+	playerFish =  new Fish("fish.png",scene,1);
+
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	Vec2 centrCoord = Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y);
+
+	playerFish->Init(centrCoord, 0, FISH_SCALE*graphicsScale);
+	playerFish->Activate();
 }
 
 void Spawner::SpawnEnemyFish()
 {
-	enemyFish = new EnemyFish(scene);
+	enemyFish =  new EnemyFish("badFish.png", scene, 1);
 	//enemyFish->LookTo(playerFish->sprite->getPosition());
-	
-	enemyFish->SetTarget(playerFish->sprite->getPosition());
+	enemyFish->Init(Vec2(-100, -100), 0, FISH_SCALE*graphicsScale);
+	//enemyFish->SetTarget(playerFish->sprite->getPosition());
+	//enemyFish->SetTarget(Vec2(200, 200));
+	enemyFish->SetTarget(playerFish->getPosition());
 	enemyFish->Activate();
 }
 
 void Spawner::SpawnBubble()
 {
 	//return;
+	playerFish->setTexture("fishBubble.png");
 
+	if (reloadingTime > 0) return;
+	//return;
+
+	/*
 	if (!bubbleInitialised) 
 	{
 		bubble = new Bubble(scene, Vec2(INITIAL_POS_X,INITIAL_POS_Y), maxCoord, bubbleCounter);
@@ -89,46 +117,137 @@ void Spawner::SpawnBubble()
 
 	bubble->SetNewPos(playerFish->sprite->getPosition(), playerFish->currentRotation, BUBBLE_SPEED);
 	bubble->Activate();
+	*/
+	reloadingTime = RELOAD_TIME;
+
+	bool gotBubble = false;
+
+	BubbleNode* currentBubbleNode = bubbleHolder->FirstBubbleNode;
+
+	while (!gotBubble) {
+		
+		if (!currentBubbleNode->bubble->active) {
+
+			currentBubbleNode->bubble->SetNewPos(playerFish->getPosition(), playerFish->currentRotation, BUBBLE_SPEED);
+			currentBubbleNode->bubble->Activate();
+			gotBubble = true;
+			log("Fired bubble %d", currentBubbleNode->bubble->id);
+		}
+		else if (currentBubbleNode->nextBubbleNode != NULL) {
+			currentBubbleNode = currentBubbleNode->nextBubbleNode;
+			continue;
+		}
+		else
+		{
+			BubbleNode* newBubbleNode = new BubbleNode();
+			
+			//Bubble* newBubble =new Bubble(scene, Vec2(INITIAL_POS_X, INITIAL_POS_Y), maxCoord, bubbleCounter);
+			Bubble* newBubble = new Bubble("bubble.png", scene, bubbleCounter);
+			newBubble->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale);
+			bubbleCounter++;
+
+			newBubbleNode->bubble = newBubble;
+			newBubbleNode->nextBubbleNode = NULL;
+
+			bubbleHolder->Push(newBubble);
+
+			currentBubbleNode = newBubbleNode;
+			continue;
+		}
+		//bubbleHolder.FirstBubbleNode->bubble
+
+	}
 	
 }
 
 void Spawner::Run(float deltaTime) 
 {
-	if (bubbleInitialised) 
-	{
-		bubble->Run(deltaTime);
-		CheckBubbleCollide();
-	}
+	//if (bubbleInitialised) 
+	//{
+	//	bubble->Run(deltaTime);
+	//	CheckBubbleCollide();
+	//}
 	
+	RunBubbles(deltaTime);
 	//if (enemyFish->active) 
 	{
 		enemyFish->Run(deltaTime);
 	}
 	
+	CheckBubbleCollide();
 	CheckFishCollide();
 	
+
+	if (reloadingTime > 0) {
+		reloadingTime -= deltaTime;
+	}
+}
+
+void Spawner::RunBubbles(float deltaTime)
+{
+	bool runBubbles = true;
+
+	bubbleNode = bubbleHolder->FirstBubbleNode;
+
+	while (runBubbles)
+	{
+		if (bubbleNode->bubble->active) bubbleNode->bubble->Run(deltaTime);
+
+		if (bubbleNode->nextBubbleNode == NULL)
+		{
+			runBubbles = false;
+		}
+		else
+		{
+			bubbleNode = bubbleNode->nextBubbleNode;
+		}
+	}
 }
 
 void Spawner::CheckFishCollide() {
-	if (CollisionDetection(playerFish->sprite, enemyFish->sprite))
+	if (CollisionDetection(playerFish, enemyFish))
 	{
 		Game::gameOver = true;
 	}
 }
 
 void Spawner::CheckBubbleCollide() {
-	if (CollisionDetection(bubble->sprite, enemyFish->sprite))
+
+	bool runBubbles = true;
+
+	bubbleNode = bubbleHolder->FirstBubbleNode;
+
+	while (runBubbles)
 	{
-		//enemyFish->enemyFishSprite->setPosition(enemyFish->GetRandomCoord());
-		//enemyFish->LookTo(playerFish->sprite->getPosition());
-		enemyFish->DeActivate();
-		enemyFish->Activate();
-		bubble->DeActivate();
+		if (bubbleNode->bubble->active)
+		{
+			//bubbleNode->bubble->Run(deltaTime);
+			if (CollisionDetection(bubbleNode->bubble, enemyFish))
+			{
+				//enemyFish->enemyFishSprite->setPosition(enemyFish->GetRandomCoord());
+				//enemyFish->LookTo(playerFish->sprite->getPosition());
+				enemyFish->DeActivate();
+				enemyFish->Activate();
+				bubbleNode->bubble->DeActivate();
+			}
+		}
+
+		if (bubbleNode->nextBubbleNode == NULL)
+		{
+			runBubbles = false;
+		}
+		else
+		{
+			bubbleNode = bubbleNode->nextBubbleNode;
+		}
 	}
+
+	
 }
 
 void Spawner::TurnPlayerFish(Vec2 lookPos)
 {
+	if (!playerFish->active) return;
 	playerFish->LookTo(lookPos);
 }
 
@@ -153,6 +272,27 @@ bool Spawner::CollisionDetection(cocos2d::Sprite* sprite1, cocos2d::Sprite* spri
 	}
 
 	return false;
+}
+
+void BubbleHolder::Push(Bubble* bubble) {
+
+	bubbleNode = new BubbleNode();
+
+	bubbleNode->bubble = bubble;
+	bubbleNode->nextBubbleNode = NULL;
+
+	LastBubbleNode->nextBubbleNode =  bubbleNode;
+
+	LastBubbleNode = bubbleNode;
+}
+
+BubbleHolder::BubbleHolder(Bubble* firstBubble) {
+	bubbleNode = new BubbleNode();
+	bubbleNode->bubble = firstBubble;
+	bubbleNode->nextBubbleNode = NULL;
+
+	FirstBubbleNode = bubbleNode;
+	LastBubbleNode = bubbleNode;
 }
 
 

@@ -29,6 +29,39 @@
 
 USING_NS_CC;
 
+#pragma region GameObject
+
+GameObject::GameObject(std::string fileName, Scene* scene,int id)
+{
+	this->id = id;
+	//this->initWithSpriteFrameName(fileName);
+	//this = dynamic_cast<GameObject*>(Sprite::create(fileName));
+	this->init();
+	this->setTexture(fileName);
+	//this->setPosition
+	scene->addChild(this, 1);
+}
+
+void GameObject::Init(cocos2d::Vec2 startPos, float startRotation, float scale)
+{
+	this->setPosition(startPos);
+	this->setScale(scale);
+	this->setRotation(startRotation);
+}
+
+void GameObject::Run(float deltaTime) {}
+void GameObject::Activate()
+{
+	active = true;
+}
+
+void GameObject::DeActivate()
+{
+	active = false;
+}
+
+#pragma endregion
+
 #pragma region Moving
 
 void Moving::LookTo(cocos2d::Vec2 point) {
@@ -91,7 +124,7 @@ bool Moving::CheckOutScreen() {
 void Animating::AnimateScale(float deltaTime) {
 	counter += deltaTime;
 	animatingSprite->setScale(animIncrementScale*(1 - sin(animScalePeriod*counter)) + currentScale);
-	log("bubble scale %f",animatingSprite->getScale());
+	//log("bubble scale %f",animatingSprite->getScale());
 }
 
 #pragma endregion

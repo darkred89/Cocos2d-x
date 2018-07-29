@@ -30,17 +30,18 @@
 #include <cmath> 
 #include "Components.h"
 
-class Fish : public Moving
+class Fish :public GameObject, public Moving
 {
 public:
 
 	cocos2d::Sprite* sprite;
-	Fish(cocos2d::Scene* scene);
+	Fish(std::string fileName, cocos2d::Scene* scene, int id);
 	
 	//float currentRotation;
 	
 	//int n;
-	void Run(float deltaTime);
+	//virtual void Run(float deltaTime);
+	virtual void Init(cocos2d::Vec2 startPos, float startRotation, float scale);
 	void Turn();
 	
 	//void LookTo(cocos2d::Vec2);

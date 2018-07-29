@@ -31,21 +31,22 @@
 #include <stdlib.h> 
 #include "Components.h"
 
-class EnemyFish: public Moving, public Animating
+class EnemyFish:public GameObject, public Moving, public Animating
 {
 public:
 
-	cocos2d::Sprite* sprite;
-	EnemyFish(cocos2d::Scene* scene);
+	//cocos2d::Sprite* sprite;
+	EnemyFish(std::string fileName, cocos2d::Scene* scene, int id);
 	
 	
-	bool active;
+	//bool active;
 	//int n;
 	//float angle;
 	//int speed;
-	void Run(float);
-	void Activate();
-	void DeActivate();
+	virtual void Init(cocos2d::Vec2 startPos, float startRotation, float scale) override;
+	virtual void Run(float) override;
+	virtual void Activate() override;
+	virtual void DeActivate() override;
 	//virtual void LookTo(cocos2d::Vec2) override;
 	void SetTarget(cocos2d::Vec2);
 	
