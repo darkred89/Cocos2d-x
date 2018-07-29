@@ -20,9 +20,8 @@ void Bubble::Init(cocos2d::Vec2 startPos, float startRotation, cocos2d::Vec2 max
 	//this->playerFish = playerFish;
 	this->playerFish=playerFish;
 	animatingSprite = this;
-	currentScale = Spawner::graphicsScale*BUBBLE_SCALE;
-	animIncrementScale = Spawner::graphicsScale*BUBBLE_ANIM_INCREMENT_SCALE;
-	animScalePeriod = 2 * M_PI / BUBBLE_ANIM_SCALE_PERIOD;
+
+	AnimateScale(Spawner::graphicsScale*BUBBLE_SCALE,Spawner::graphicsScale*BUBBLE_ANIM_INCREMENT_SCALE, BUBBLE_ANIM_SCALE_PERIOD);
 
 	maxPos = maxPosition;
 	initialPos = startPos;
@@ -31,7 +30,7 @@ void Bubble::Init(cocos2d::Vec2 startPos, float startRotation, cocos2d::Vec2 max
 
 	active = false;
 
-	counter = 0;
+	//counter = 0;
 }
 
 void Bubble::Run(float deltaTime) 
@@ -39,19 +38,19 @@ void Bubble::Run(float deltaTime)
 	if (!active) return;
 	
 	Move(deltaTime);
-	AnimateScale(deltaTime);
+	Animate(deltaTime);
 
 	if (CheckOutScreen()) {
 		DeActivate();
 	}
 }
 
-//override test
-void Bubble::AnimateScale(float deltaTime) 
-{
-	Animating::AnimateScale(deltaTime);
-	//sprite->setScale(sprite->getScale() * 2);
-}
+////override test
+//void Bubble::AnimateScale(float deltaTime) 
+//{
+//	Animating::AnimateScale(deltaTime);
+//	//sprite->setScale(sprite->getScale() * 2);
+//}
 
 void Bubble::Activate() 
 {

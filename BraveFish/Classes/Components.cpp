@@ -93,11 +93,44 @@ bool Moving::CheckOutScreen()
 
 #pragma region Animating
 
-void Animating::AnimateScale(float deltaTime) 
+void Animating::AnimateScale(float currentScale, float animIncrementScale, float animScalePeriod)
+{
+	animScale = true;
+	this->animScalePeriod =  2* M_PI / animScalePeriod;
+	this->currentScale = currentScale;
+	this->animIncrementScale = animIncrementScale;
+}
+
+void Animating::RunAnimateScale()
+{
+	
+	animatingSprite->setScale(animIncrementScale*(1 - sin(animScalePeriod*counter)) + currentScale);
+	log("bubble scale %f",animatingSprite->getScale());
+}
+
+void Animating::Animate(float deltaTime)
 {
 	counter += deltaTime;
-	animatingSprite->setScale(animIncrementScale*(1 - sin(animScalePeriod*counter)) + currentScale);
-	//log("bubble scale %f",animatingSprite->getScale());
+	if(animScale) RunAnimateScale();
+
+	if (animSprite)
+	{
+		if (counter > setAnimSpriteTime)
+		{
+			animatingSprite->setTexture(defaultSprite);
+			animSprite = false;
+		}
+	}
+}
+
+void Animating::AnimateSprite(std::string defaultSprite,std::string nextSprite, float duration)
+{
+	if (animSprite) return;
+
+	this->defaultSprite = defaultSprite;
+	animSprite = true;
+	setAnimSpriteTime = counter+ duration;
+	animatingSprite->setTexture(nextSprite);
 }
 
 #pragma endregion
@@ -126,15 +159,12 @@ PoolHolder::PoolHolder(GameObject* fisrtGameObject)
 GameObject* PoolHolder::GetFreeGameObject()
 {
 	bool gotGameObject = false;
-	//BubbleNode* currentBubbleNode = bubbleHolder->FirstBubbleNode;
 	PoolHolderNode* currentNode = FirstNode;
 
 	while (!gotGameObject)
 	{
 		if (!currentNode->gameObject->active)
 		{
-			//currentBubbleNode->gameObject->SetNewPos(playerFish->getPosition(), playerFish->currentRotation, BUBBLE_SPEED);
-			//currentNode->gameObject->Activate();
 			gotGameObject = true;
 			return(currentNode->gameObject);
 		}
@@ -145,17 +175,6 @@ GameObject* PoolHolder::GetFreeGameObject()
 		}
 		else
 		{
-			////BubbleNode* newBubbleNode = new BubbleNode();	
-			//PoolHolderNode* newBubbleNode = new PoolHolderNode();
-			//Bubble* newBubble = new Bubble("bubble.png", scene, bubbleCounter);
-			//newBubble->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale, playerFish);
-			//bubbleCounter++;
-			//
-			//newBubbleNode->gameObject = newBubble;
-			//newBubbleNode->nextNode = NULL;
-			//bubbleHolder->Push(newBubble);
-			//currentBubbleNode = newBubbleNode;
-			//continue;
 			return NULL;
 		}
 	}

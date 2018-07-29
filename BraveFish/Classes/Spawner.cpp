@@ -114,25 +114,33 @@ void Spawner::TouchEnded()
 void Spawner::CheckTouch()
 {
 	if (!CheckEnemyFishTouched(touchPos)) return;
+	
 	SpawnBubble();
+	
 }
 
 bool Spawner::CheckEnemyFishTouched(Vec2 touchPos)
 {
 	target->setPosition(touchPos);
 
+	if (CheckFishCollide(target, false))
+	{
+		return true;
+	}
 	//if(CollisionDetection(target,enemyFish)) return true;
 	//else return false;
-	return true;
+	return false;
 }
 
 void Spawner::SpawnBubble()
 {
 	//return;/*
 	
-	playerFish->setTexture(FISH_BUBBLE_IMAGE);
+	//playerFish->setTexture(FISH_BUBBLE_IMAGE);
 
 	if (reloadingTime > 0) return;
+
+	playerFish->AnimateSprite(FISH_IMAGE, FISH_BUBBLE_IMAGE, FISH_FIREANIM_TIME);
 
 	reloadingTime = RELOAD_TIME;
 
@@ -189,7 +197,7 @@ void Spawner::SpawnBubble()
 void Spawner::Run(float deltaTime) 
 {
 	SpawnDecide(deltaTime);
-
+	playerFish->Run(deltaTime);
 	RunBubbles(deltaTime);
 	RunEnemyFishes(deltaTime);
 	//enemyFish->Run(deltaTime);
@@ -221,7 +229,7 @@ void Spawner::SpawnDecide(float deltaTime)
 		spawnCounter++;
 		if (spawnCounter > FISH_SPAWN_COUNTER_INCREASE)
 		{
-			spawnCounter = 0;
+			spawnCounter = - spawnAmount* FISH_SPAWN_COUNTER_INCREASE/2;
 			spawnAmount++;
 		}
 		spawnCooldown = FISH_SPAWN_DELAY;

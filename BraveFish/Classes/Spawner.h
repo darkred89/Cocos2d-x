@@ -12,7 +12,8 @@
 #define FISH_BUBBLE_IMAGE "fishBubble.png"
 #define FISH_TURN_RATE 3
 #define ENEMY_FISH_IMAGE "badFish.png"
-#define RELOAD_TIME 0.5
+#define RELOAD_TIME 0.3
+#define FISH_FIREANIM_TIME RELOAD_TIME*0.6
 
 #define BUBBLE_SCALE 0.15
 #define BUBBLE_ANIM_INCREMENT_SCALE 0.05
@@ -20,12 +21,12 @@
 
 #define TARGET_SCALE 0.15
 #define FISH_SPEED 20
-#define BUBBLE_SPEED 50
+#define BUBBLE_SPEED 100
 #define BUBBLE_IMAGE "bubble.png"
 
 
 #define FISH_SPAWN_DELAY 2
-#define FISH_SPAWN_COUNTER_INCREASE 4
+#define FISH_SPAWN_COUNTER_INCREASE 3
 #define FISH_COUNT 100
 #define BUBBLE_COUNT 100
 

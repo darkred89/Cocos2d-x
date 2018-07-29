@@ -44,17 +44,29 @@ public:
 class Animating
 {
 public:
+	float counter;
 
 	GameObject * animatingSprite;
+	
+
+	virtual void Animate(float deltaTime);
+
+	virtual void AnimateScale(float currentScale, float animIncrementScale, float animScalePeriod);
+	virtual void AnimateSprite(std::string defaultSprite, std::string nextSprite, float duration);
+	//virtual void Run(float deltaTime) {};
+
+private:
+	std::string defaultSprite;
 
 	float currentScale;
 	float animIncrementScale;
 	float animScalePeriod;
-	virtual void AnimateScale(float deltaTime);
-	float counter;
-	
-	//virtual void Run(float deltaTime) {};
 
+	float setAnimSpriteTime;
+
+	bool animScale=false;
+	bool animSprite=false;
+	virtual void RunAnimateScale();
 };
 
 
@@ -62,7 +74,6 @@ struct PoolHolderNode
 {
 	GameObject* gameObject;
 	PoolHolderNode* nextNode;
-	//Bubble*	
 };
 
 class PoolHolder
