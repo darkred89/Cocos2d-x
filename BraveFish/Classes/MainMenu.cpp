@@ -89,7 +89,7 @@ void MainMenu::MenuSetup() {
 	auto menu = Menu::create(closeItem, gameItem, NULL);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 2);
-
+	
 	auto label = Label::createWithTTF("Fish Game", "fonts/Marker Felt.ttf", 24);
 	if (label == nullptr)
 	{
@@ -119,6 +119,16 @@ void MainMenu::MenuSetup() {
 		this->addChild(btnLabel, 2);
 	}
 
+	//testing of action
+	//Sprite* testSprite = Sprite::create("fish.png");
+	//
+	//this->addChild(testSprite);
+	//testSprite->setPosition(0, 0);
+	//
+	//auto animAction = ScaleBy::create(2.0f, 2.0f);
+	////auto moveAction = MoveBy::create()
+	//auto repeatForever = cocos2d::RepeatForever::create(animAction);
+	//testSprite->runAction(animAction);
 
 }
 

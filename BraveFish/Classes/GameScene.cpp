@@ -33,7 +33,10 @@ bool GameScene::init()
 
 	InitialSetup();
 
-	gameController =new GameController(this,graphicsScale);
+	auto gameNode = Node::create();
+	this->addChild(gameNode);
+
+	gameController =new GameController(gameNode,graphicsScale);
 
 	this->scheduleUpdate();
 
@@ -44,6 +47,8 @@ bool GameScene::init()
 	touchListener->onTouchCancelled = CC_CALLBACK_2(GameScene::onTouchCancelled, this);
 
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+
+	Director::getInstance()->getScheduler()->scheduleUpdate(gameController, 0, false);
 
 	gameOver = false;
     return true;

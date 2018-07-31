@@ -24,7 +24,7 @@ float reloadingTime;
 
 bool touching;
 
-GameController::GameController(Scene* _scene, float scale)
+GameController::GameController(Node* _scene, float scale)
 {
 	reloadingTime = 0;
 	bubbleCounter = 0;
@@ -47,26 +47,35 @@ GameController::GameController(Scene* _scene, float scale)
 
 	SpawnFish();
 
-	Bubble* newBubble = new Bubble(BUBBLE_IMAGE, scene, bubbleCounter);
+	Bubble* newBubble = new Bubble(BUBBLE_IMAGE, bubbleCounter);
 	newBubble->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale,playerFish);
 	bubbleCounter++;
 	bubbleHolder = new BubbleHolder(newBubble);	
+	scene->addChild(newBubble,0);
 
-	EnemyFish* newEnemyFish = new EnemyFish("badFish.png", scene, enemyFishCounter);
+	EnemyFish* newEnemyFish = new EnemyFish("badFish.png", enemyFishCounter);
 	newEnemyFish->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, FISH_SCALE*graphicsScale);
 	newEnemyFish->SetTarget(playerFish->getPosition());
 	enemyFishCounter++;
 	enemyFishHolder = new EnemyFishHolder(newEnemyFish);
+	scene->addChild(newEnemyFish,0);
 
-	target = new GameObject(BUBBLE_IMAGE, scene, 0);
+	target = new GameObject(BUBBLE_IMAGE, 0);
 	target->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, BUBBLE_SCALE*graphicsScale*0.3);
 	target->setOpacity(0);
+
+	//this->create();
+	//CREATE_FUNC(GameController);
+	
 }
+
+
 
 void GameController::SpawnFish()
 {
 	//return;
-	playerFish =  new Fish(FISH_IMAGE,scene,1);
+	playerFish =  new Fish(FISH_IMAGE,1);
+	scene->addChild(playerFish);
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
@@ -74,23 +83,28 @@ void GameController::SpawnFish()
 
 	playerFish->Init(centrCoord, 0, FISH_SCALE*graphicsScale);
 	playerFish->Activate();
+
 }
 
 void GameController::SpawnEnemyFish()
 {
 	GameObject* newEnemyFish = enemyFishHolder->GetFreeGameObject();
+	
 
 	if (newEnemyFish != NULL) {
 		newEnemyFish->Activate();
 	}
 	else
 	{
-		EnemyFish* nextEnemyFish = new EnemyFish("badFish.png", scene, 1);
+		EnemyFish* nextEnemyFish = new EnemyFish("badFish.png", 1);
+		scene->addChild(nextEnemyFish,0);
 		nextEnemyFish->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, FISH_SCALE*graphicsScale);
+		
 		enemyFishCounter++;
 		enemyFishHolder->Push(nextEnemyFish);
 		nextEnemyFish->SetTarget(playerFish->getPosition());
 		nextEnemyFish->Activate();
+		
 	}
 }
 
@@ -115,7 +129,7 @@ void GameController::CheckTouch()
 void GameController::TurnPlayerFish(Vec2 lookPos)
 {
 	if (!playerFish->active) return;
-	playerFish->Turn(playerFish->LookTo(lookPos) + 180);
+	playerFish->Turn(playerFish->LookTo(lookPos));
 }
 
 bool GameController::CheckEnemyFishTouched(Vec2 touchPos)
@@ -145,12 +159,19 @@ void GameController::SpawnBubble()
 	}
 	else 
 	{
-		Bubble* nextBubble = new Bubble(BUBBLE_IMAGE, scene, bubbleCounter);
+		Bubble* nextBubble = new Bubble(BUBBLE_IMAGE, bubbleCounter);
+		scene->addChild(nextBubble,0);
 		nextBubble->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale, playerFish);
 		bubbleCounter++;
 		bubbleHolder->Push(nextBubble);
 		nextBubble->Activate();
+		
 	}	
+}
+
+void GameController::update(float delta)
+{
+	//log("controller update");
 }
 
 void GameController::Run(float deltaTime)
@@ -180,6 +201,7 @@ void GameController::Run(float deltaTime)
 
 void GameController::SpawnDecide(float deltaTime)
 {
+	//return;
 	if (spawnCooldown <= 0)
 	{
 		for (int i = 0; i < spawnAmount; i++) 

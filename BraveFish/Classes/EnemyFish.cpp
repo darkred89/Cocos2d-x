@@ -8,7 +8,7 @@
 
 USING_NS_CC;
 
-EnemyFish::EnemyFish(std::string fileName, cocos2d::Scene* scene, int id):GameObject::GameObject(fileName, scene, id)
+EnemyFish::EnemyFish(std::string fileName, int id):GameObject::GameObject(fileName, id)
 {
 	
 }
@@ -26,9 +26,11 @@ void EnemyFish::Activate()
 {	
 	GameObject::Activate();
 	SetNewPos(GetRandomCoord(), 0, FISH_SPEED+ rand() % FISH_SPEED);
-	currentRotation = LookTo(target);
-	setRotation(currentRotation+180);
-	currentRotation= currentRotation / 180 * M_PI;
+	//currentRotation = LookTo(target);
+	setCurrentRotation(LookTo(target));
+	//setRotation(currentRotation+180);
+	//currentRotation= currentRotation / 180 * M_PI;
+	setCurrentRotationToRadians();
 }
 
 void EnemyFish::DeActivate() 

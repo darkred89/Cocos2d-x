@@ -8,7 +8,7 @@ USING_NS_CC;
 float sceneWidth;
 float sceneHeight;
 
-Bubble::Bubble(std::string fileName, cocos2d::Scene* scene, int id) :GameObject::GameObject(fileName, scene, id)//Bubble(cocos2d::Scene* scene, cocos2d::Vec2 startPosition, cocos2d::Vec2 maxPosition, int id)
+Bubble::Bubble(std::string fileName, int id) :GameObject::GameObject(fileName, id)//Bubble(cocos2d::Scene* scene, cocos2d::Vec2 startPosition, cocos2d::Vec2 maxPosition, int id)
 {
 
 }
@@ -20,8 +20,8 @@ void Bubble::Init(cocos2d::Vec2 startPos, float startRotation, cocos2d::Vec2 max
 	//this->playerFish = playerFish;
 	this->playerFish=playerFish;
 	animatingSprite = this;
-
-	AnimateScale(GameController::graphicsScale*BUBBLE_SCALE, GameController::graphicsScale*BUBBLE_ANIM_INCREMENT_SCALE, BUBBLE_ANIM_SCALE_PERIOD);
+	initScale = scale;
+	//AnimateScale(GameController::graphicsScale*BUBBLE_SCALE, GameController::graphicsScale*BUBBLE_ANIM_INCREMENT_SCALE, BUBBLE_ANIM_SCALE_PERIOD);
 
 	maxPos = maxPosition;
 	initialPos = startPos;
@@ -47,9 +47,11 @@ void Bubble::Run(float deltaTime)
 
 void Bubble::Activate() 
 {
+	setScale(initScale);
 	SetNewPos(playerFish->getPosition(), playerFish->getRotation() / 180 * M_PI+ M_PI, BUBBLE_SPEED);
 	//log("current rotation: %f", playerFish->currentRotation);
 	//log("get rotation: %f", playerFish->getRotation());
+	TestAnimateAction(BUBBLE_ANIM_MULTIPLY_SCALE, BUBBLE_ANIM_SCALE_PERIOD);
 	GameObject::Activate();
 }
 

@@ -10,13 +10,14 @@
 #define FISH_SCALE 0.15
 #define FISH_IMAGE "fish.png"
 #define FISH_BUBBLE_IMAGE "fishBubble.png"
-#define FISH_TURN_RATE 160 //in grads
+#define FISH_TURN_RATE 220 //in grads
 #define ENEMY_FISH_IMAGE "badFish.png"
 #define RELOAD_TIME 0.3
 #define FISH_FIREANIM_TIME RELOAD_TIME*0.6
 
 #define BUBBLE_SCALE 0.15
 #define BUBBLE_ANIM_INCREMENT_SCALE 0.05
+#define BUBBLE_ANIM_MULTIPLY_SCALE 1.5
 #define BUBBLE_ANIM_SCALE_PERIOD 1 //in seconds
 
 #define TARGET_SCALE 0.15
@@ -59,7 +60,7 @@ public:
 	static float graphicsScale;
 	static cocos2d::Vec2 maxCoord;
 
-	GameController(cocos2d::Scene* _scene, float scale);
+	GameController(cocos2d::Node* _scene, float scale);
 
 	void Run(float deltaTime);
 
@@ -70,6 +71,8 @@ public:
 	void SetTouch(cocos2d::Vec2 touchPos);
 	void TouchEnded();
 	
+	void update(float);
+
 	GameObject* target;
 
 	Fish* playerFish;
@@ -99,7 +102,7 @@ private:
 
 	cocos2d::Vec2 touchPos;
 
-	cocos2d::Scene* scene;
+	cocos2d::Node* scene;
 };
 
 #endif

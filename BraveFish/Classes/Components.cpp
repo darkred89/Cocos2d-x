@@ -7,7 +7,7 @@ USING_NS_CC;
 
 #pragma region GameObject
 
-GameObject::GameObject(std::string fileName, Scene* scene,int id)
+GameObject::GameObject(std::string fileName,int id)
 {
 	this->id = id;
 	//this->initWithSpriteFrameName(fileName);
@@ -15,7 +15,7 @@ GameObject::GameObject(std::string fileName, Scene* scene,int id)
 	this->init();
 	this->setTexture(fileName);
 	//this->setPosition
-	scene->addChild(this, 1);
+	//scene->addChild(this, 1);
 }
 
 void GameObject::Init(cocos2d::Vec2 startPos, float startRotation, float scale)
@@ -33,6 +33,7 @@ void GameObject::Activate()
 
 void GameObject::DeActivate()
 {
+	stopAllActions();
 	active = false;
 }
 
@@ -40,7 +41,7 @@ void GameObject::DeActivate()
 
 #pragma region Moving
 
-float Moving::LookTo(cocos2d::Vec2 point) 
+float Moving::LookTo(const cocos2d::Vec2& point)
 {
 	if (movingSprite == NULL) {
 		log("missing movingSprite to move");
@@ -100,6 +101,19 @@ void Animating::AnimateScale(float currentScale, float animIncrementScale, float
 	this->animScalePeriod =  2* M_PI / animScalePeriod;
 	this->currentScale = currentScale;
 	this->animIncrementScale = animIncrementScale;
+}
+
+void Animating::TestAnimateAction(float animMultiplyScale, float animScalePeriod)
+{
+	auto animAction = ScaleBy::create(animScalePeriod/2, animMultiplyScale);
+	auto move_ease_in = EaseInOut::create(animAction->clone(),2);
+	auto animActionRev = ScaleBy::create(animScalePeriod/2, 1/ animMultiplyScale);
+	auto move_ease_out = EaseInOut::create(animActionRev->clone(),2);
+	
+	auto seq = Sequence::create(move_ease_in, move_ease_out, nullptr);
+	auto repeatForever = cocos2d::RepeatForever::create(seq);
+
+	animatingSprite->runAction(repeatForever);
 }
 
 void Animating::RunAnimateScale()
