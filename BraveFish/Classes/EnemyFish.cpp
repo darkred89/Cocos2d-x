@@ -13,34 +13,42 @@ EnemyFish::EnemyFish(std::string fileName, int id):GameObject::GameObject(fileNa
 	
 }
 
-void EnemyFish::Init(cocos2d::Vec2 startPos, float startRotation, float scale)
+void EnemyFish::init(cocos2d::Vec2 startPos, float startRotation, float scale)
 {
-	GameObject::Init(startPos, startRotation, scale);
+	GameObject::init(startPos, startRotation, scale);
 	movingSprite = this;
 	initialPos = startPos;
-	SetNewPos(startPos, 0, 0);
-	active = false;
+	setNewPos(startPos, 0, 0);
 }
 
-void EnemyFish::Activate() 
+void EnemyFish::activate() 
 {	
-	GameObject::Activate();
-	SetNewPos(GetRandomCoord(), 0, FISH_SPEED+ rand() % FISH_SPEED);
-	//currentRotation = LookTo(target);
-	setCurrentRotation(LookTo(target));
-	//setRotation(currentRotation+180);
-	//currentRotation= currentRotation / 180 * M_PI;
+	GameObject::activate();
+	setNewPos(getRandomCoord(), 0, FISH_SPEED+ rand() % FISH_SPEED);
+	setCurrentRotation(lookTo(target));
 	setCurrentRotationToRadians();
 }
 
-void EnemyFish::DeActivate() 
+void EnemyFish::deActivate() 
 {
-	GameObject::DeActivate();
-	SetNewPos(initialPos, 0, 0);
-	LookTo(target);
+	GameObject::deActivate();
+	setNewPos(initialPos, 0, 0);
+	lookTo(target);
+	
 }
 
-Vec2 EnemyFish::GetRandomCoord() 
+void EnemyFish::goAway()
+{
+	setNewPos(initialPos, 0, 0);
+}
+
+void EnemyFish::die()
+{
+	GameObject::die();
+	fishDie(this, 1.0f);
+}
+
+Vec2 EnemyFish::getRandomCoord() 
 {
 	int side = rand() % 4;
 	Vec2 randomPos = Vec2(0, 0);
@@ -67,18 +75,16 @@ Vec2 EnemyFish::GetRandomCoord()
 	return randomPos;
 }
 
-void EnemyFish::SetTarget(Vec2 point) 
+void EnemyFish::setTarget(Vec2 point) 
 {
 	target = point;
-	Moving::LookTo(point);
+	Moving::lookTo(point);
 }
 
-void EnemyFish::Run(float deltaTime) 
+void EnemyFish::update(float delta)
 {
-	if (!active) return;
-	Move(deltaTime);
+	move(delta);
 }
-
 
 
 

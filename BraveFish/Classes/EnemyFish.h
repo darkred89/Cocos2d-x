@@ -13,17 +13,19 @@ public:
 
 	EnemyFish(std::string fileName, int id);
 	
-	virtual void Init(cocos2d::Vec2 startPos, float startRotation, float scale) override;
-	virtual void Run(float) override;
-	virtual void Activate() override;
-	virtual void DeActivate() override;
+	virtual void init(cocos2d::Vec2 startPos, float startRotation, float scale) override;
+	virtual void die() override;
+	virtual void activate() override;
+	virtual void deActivate() override;
+	virtual void goAway() override;
 
-	void SetTarget(cocos2d::Vec2);
+	void setTarget(cocos2d::Vec2);
 	
 private:
 
+	virtual void update(float delta) override;
 	cocos2d::Vec2 target;
-	cocos2d::Vec2 GetRandomCoord();
+	cocos2d::Vec2 getRandomCoord();
 };
 
 #endif

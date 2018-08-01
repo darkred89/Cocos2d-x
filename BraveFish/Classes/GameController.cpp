@@ -24,7 +24,7 @@ float reloadingTime;
 
 bool touching;
 
-GameController::GameController(Node* _scene, float scale)
+GameController::GameController(Node* playNode, float scale)
 {
 	reloadingTime = 0;
 	bubbleCounter = 0;
@@ -36,7 +36,7 @@ GameController::GameController(Node* _scene, float scale)
 	touching = false;
 	touchPos = Vec2(0, 0);
 
-	scene = _scene;
+	this->playNode = playNode;
 	graphicsScale = scale;
 	scaleQuadCoef = graphicsScale * graphicsScale*FISH_SCALE*FISH_SCALE;
 
@@ -45,168 +45,159 @@ GameController::GameController(Node* _scene, float scale)
 
 	maxCoord = Vec2(visibleSize.width + origin.x, visibleSize.height + origin.y);
 
-	SpawnFish();
+	spawnFish();
 
 	Bubble* newBubble = new Bubble(BUBBLE_IMAGE, bubbleCounter);
-	newBubble->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale,playerFish);
+	newBubble->init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale,playerFish);
 	bubbleCounter++;
 	bubbleHolder = new BubbleHolder(newBubble);	
-	scene->addChild(newBubble,0);
+	this->playNode->addChild(newBubble,0);
 
 	EnemyFish* newEnemyFish = new EnemyFish("badFish.png", enemyFishCounter);
-	newEnemyFish->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, FISH_SCALE*graphicsScale);
-	newEnemyFish->SetTarget(playerFish->getPosition());
+	newEnemyFish->init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, FISH_SCALE*graphicsScale);
+	newEnemyFish->setTarget(playerFish->getPosition());
 	enemyFishCounter++;
 	enemyFishHolder = new EnemyFishHolder(newEnemyFish);
-	scene->addChild(newEnemyFish,0);
+	this->playNode->addChild(newEnemyFish,0);
 
 	target = new GameObject(BUBBLE_IMAGE, 0);
-	target->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, BUBBLE_SCALE*graphicsScale*0.3);
+	target->init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, BUBBLE_SCALE*graphicsScale*0.3);
 	target->setOpacity(0);
-
-	//this->create();
-	//CREATE_FUNC(GameController);
 	
 }
 
 
 
-void GameController::SpawnFish()
+void GameController::spawnFish()
 {
 	//return;
 	playerFish =  new Fish(FISH_IMAGE,1);
-	scene->addChild(playerFish);
+	playNode->addChild(playerFish);
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	Vec2 centrCoord = Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y);
 
-	playerFish->Init(centrCoord, 0, FISH_SCALE*graphicsScale);
-	playerFish->Activate();
+	playerFish->init(centrCoord, 0, FISH_SCALE*graphicsScale);
+	playerFish->activate();
 
 }
 
-void GameController::SpawnEnemyFish()
+void GameController::spawnEnemyFish()
 {
-	GameObject* newEnemyFish = enemyFishHolder->GetFreeGameObject();
+	GameObject* newEnemyFish = enemyFishHolder->getFreeGameObject();
 	
 
 	if (newEnemyFish != NULL) {
-		newEnemyFish->Activate();
+		newEnemyFish->activate();
 	}
 	else
 	{
-		EnemyFish* nextEnemyFish = new EnemyFish("badFish.png", 1);
-		scene->addChild(nextEnemyFish,0);
-		nextEnemyFish->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, FISH_SCALE*graphicsScale);
+		EnemyFish* nextEnemyFish = new EnemyFish(ENEMY_FISH_IMAGE, 1);
+		playNode->addChild(nextEnemyFish,0);
+		nextEnemyFish->init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, FISH_SCALE*graphicsScale);
 		
 		enemyFishCounter++;
-		enemyFishHolder->Push(nextEnemyFish);
-		nextEnemyFish->SetTarget(playerFish->getPosition());
-		nextEnemyFish->Activate();
+		enemyFishHolder->push(nextEnemyFish);
+		nextEnemyFish->setTarget(playerFish->getPosition());
+		nextEnemyFish->activate();
 		
 	}
 }
 
-void GameController::SetTouch(Vec2 touchPos)
+void GameController::setTouch(Vec2 touchPos)
 {	
 	touching = true;
-	TurnPlayerFish(touchPos);
+	turnPlayerFish(touchPos);
 	this->touchPos = touchPos;
 }
 
-void GameController::TouchEnded()
+void GameController::touchEnded()
 {
 	touching = false;
 }
 
-void GameController::CheckTouch()
+void GameController::checkTouch()
 {
-	if (!CheckEnemyFishTouched(touchPos)) return;	
-	SpawnBubble();	
+	if (!checkEnemyFishTouched(touchPos)) return;	
+	spawnBubble();	
+	
 }
 
-void GameController::TurnPlayerFish(Vec2 lookPos)
+void GameController::turnPlayerFish(Vec2 lookPos)
 {
-	if (!playerFish->active) return;
-	playerFish->Turn(playerFish->LookTo(lookPos));
+	playerFish->turn(playerFish->lookTo(lookPos));
 }
 
-bool GameController::CheckEnemyFishTouched(Vec2 touchPos)
+bool GameController::checkEnemyFishTouched(Vec2 touchPos)
 {
 	target->setPosition(touchPos);
 
-	if (CheckFishCollide(target, false))
+	if (checkFishCollide(target, false))
 	{
 		return true;
 	}
 	return false;
 }
 
-void GameController::SpawnBubble()
+void GameController::spawnBubble()
 {
 	if (reloadingTime > 0) return;
 
-	if(playerFish->active) 
-		playerFish->AnimateSprite(FISH_IMAGE, FISH_BUBBLE_IMAGE, FISH_FIREANIM_TIME);
+	if (playerFish->isActive())
+	{
+		//playerFish->animateSprite(FISH_IMAGE, FISH_BUBBLE_IMAGE, FISH_FIREANIM_TIME);
+		playerFish->fireBubble();
+	}
 
 	reloadingTime = RELOAD_TIME;
 
-	GameObject* newBubble = bubbleHolder->GetFreeGameObject();
+	GameObject* newBubble = bubbleHolder->getFreeGameObject();
 
 	if (newBubble != NULL) {
-		newBubble->Activate();
+		newBubble->activate();
 	}
 	else 
 	{
 		Bubble* nextBubble = new Bubble(BUBBLE_IMAGE, bubbleCounter);
-		scene->addChild(nextBubble,0);
-		nextBubble->Init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale, playerFish);
+		playNode->addChild(nextBubble,0);
+		nextBubble->init(Vec2(INITIAL_POS_X, INITIAL_POS_Y), 0, maxCoord, BUBBLE_SCALE*graphicsScale, playerFish);
 		bubbleCounter++;
-		bubbleHolder->Push(nextBubble);
-		nextBubble->Activate();
+		bubbleHolder->push(nextBubble);
+		nextBubble->activate();
 		
 	}	
 }
 
 void GameController::update(float delta)
 {
-	//log("controller update");
-}
+	spawnDecide(delta);
+	checkBubbleCollide();
 
-void GameController::Run(float deltaTime)
-{
-	SpawnDecide(deltaTime);
-	playerFish->Run(deltaTime);
-	RunBubbles(deltaTime);
-	RunEnemyFishes(deltaTime);
-	
-	CheckBubbleCollide();
-
-	if (CheckFishCollide(playerFish,false))
+	if (checkFishCollide(playerFish, false))
 	{
-		playerFish->DeActivate();
-		GameScene::gameOver = true;
+		playerFish->deActivate();
+		GameScene::gameOverFlag = true;
 	}
 
 	if (reloadingTime > 0) {
-		reloadingTime -= deltaTime;
+		reloadingTime -= delta;
 	}
 
 	if (touching)
 	{
-		CheckTouch();
+		checkTouch();
 	}
 }
 
-void GameController::SpawnDecide(float deltaTime)
+void GameController::spawnDecide(float deltaTime)
 {
 	//return;
 	if (spawnCooldown <= 0)
 	{
 		for (int i = 0; i < spawnAmount; i++) 
 		{
-			SpawnEnemyFish();
+			spawnEnemyFish();
 		}
 		spawnCounter++;
 		if (spawnCounter > FISH_SPAWN_COUNTER_INCREASE)
@@ -219,27 +210,18 @@ void GameController::SpawnDecide(float deltaTime)
 	spawnCooldown -= deltaTime;
 }
 
-void GameController::RunEnemyFishes(float deltaTime)
-{
-	enemyFishHolder->RunObjects(deltaTime);
-}
 
-void GameController::RunBubbles(float deltaTime)
-{	
-	bubbleHolder->RunObjects(deltaTime);
-}
-
-bool GameController::CheckFishCollide(GameObject* gameObject, bool deactivateFish)
+bool GameController::checkFishCollide(GameObject* gameObject, bool deactivateFish)
 {
 	bool runFishCollide = true;
-	enemyFishNode = enemyFishHolder->FirstNode;
+	enemyFishNode = enemyFishHolder->firstNode;
 	while (runFishCollide)
 	{
-		if (enemyFishNode->gameObject->active)
+		if (enemyFishNode->gameObject->isColliding())
 		{
-			if (CollisionDetection(enemyFishNode->gameObject, gameObject))
+			if (collisionDetection(enemyFishNode->gameObject, gameObject))
 			{
-				if (deactivateFish) enemyFishNode->gameObject->DeActivate();
+				if (deactivateFish) enemyFishNode->gameObject->die();
 				return true;
 			}
 		}
@@ -255,17 +237,17 @@ bool GameController::CheckFishCollide(GameObject* gameObject, bool deactivateFis
 	return false;
 }
 
-void GameController::CheckBubbleCollide()
+void GameController::checkBubbleCollide()
 {	
 	bool runBubbles = true;
-	bubbleNode = bubbleHolder->FirstNode;
+	bubbleNode = bubbleHolder->firstNode;
 	while (runBubbles)
 	{
-		if (bubbleNode->gameObject->active)
+		if (bubbleNode->gameObject->isColliding())
 		{
-			if(CheckFishCollide(bubbleNode->gameObject,true))
+			if(checkFishCollide(bubbleNode->gameObject,true))
 			{
-				bubbleNode->gameObject->DeActivate();
+				bubbleNode->gameObject->deActivate();
 				return;
 			}
 		}	
@@ -282,7 +264,7 @@ void GameController::CheckBubbleCollide()
 }
 
 
-bool GameController::CollisionDetection(cocos2d::Sprite* sprite1, cocos2d::Sprite* sprite2)
+bool GameController::collisionDetection(cocos2d::Sprite* sprite1, cocos2d::Sprite* sprite2)
 {
 	Rect rect1 = sprite1->getBoundingBox();
 	Rect rect2 = sprite2->getBoundingBox();

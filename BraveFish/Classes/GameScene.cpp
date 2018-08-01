@@ -14,7 +14,7 @@ Scene* GameScene::createScene()
     return scene;
 }
 
-bool GameScene::gameOver;
+bool GameScene::gameOverFlag =false;
 
 static void problemLoading(const char* filename)
 {
@@ -29,9 +29,11 @@ bool GameScene::init()
         return false;
     }
 
+	gameOverFlag = false;
+
 	srand(time(NULL));
 
-	InitialSetup();
+	initialSetup();
 
 	auto gameNode = Node::create();
 	this->addChild(gameNode);
@@ -50,12 +52,11 @@ bool GameScene::init()
 
 	Director::getInstance()->getScheduler()->scheduleUpdate(gameController, 0, false);
 
-	gameOver = false;
     return true;
 }
 
 //Labels and menu
-void GameScene::InitialSetup()
+void GameScene::initialSetup()
 {
 	auto director = cocos2d::Director::getInstance();
 	auto width = cocos2d::Size(director->getOpenGLView()->getFrameSize()).width;
@@ -117,45 +118,44 @@ void GameScene::InitialSetup()
 
 void GameScene::update(float delta)
 {
-	gameController->Run(delta);
-	
-	if (gameOver) 
+	if (gameOverFlag) 
 	{
-		GameOver();
+		gameOver();
 		return;
 	}
 }
 
-void GotoMainMenu() 
+void gotoMainMenu() 
 {
 	Director::getInstance()->replaceScene(TransitionFade::create(1, MainMenu::createScene(), Color3B(255, 255, 255)));
 }
 
-void GameScene::GameOver()
+void GameScene::gameOver()
 {
+	Director::getInstance()->getScheduler()->unscheduleUpdate(gameController);
 	mainLabel->setString("GameOver");
 	float delay = 2.0f;
 	auto delayAction = DelayTime::create(delay);  // For 2 Seconds of Delay
-	auto funcCallback = CallFunc::create([]() {GotoMainMenu(); });
+	auto funcCallback = CallFunc::create([]() {gotoMainMenu(); });
 	this->runAction(Sequence::create(delayAction, funcCallback, NULL));
 }
 
 bool GameScene::onTouchBegan(Touch* touch, Event* event)
 {
-	if (gameOver) return true;
-	gameController->SetTouch(touch->getLocation());
+	if (gameOverFlag) return true;
+	gameController->setTouch(touch->getLocation());
 	return true;
 }
 
 void GameScene::onTouchEnded(Touch* touch, Event* event)
 {
-	gameController->TouchEnded();
+	gameController->touchEnded();
 }
 
 void GameScene::onTouchMoved(Touch* touch, Event* event)
 {
-	if (gameOver) return;
-	gameController->SetTouch(touch->getLocation());
+	if (gameOverFlag) return;
+	gameController->setTouch(touch->getLocation());
 }
 
 void GameScene::onTouchCancelled(Touch* touch, Event* event)
@@ -165,6 +165,8 @@ void GameScene::onTouchCancelled(Touch* touch, Event* event)
 
 void GameScene::menuCloseCallback(Ref* pSender)
 {
+	Director::getInstance()->getScheduler()->unscheduleUpdate(gameController);
+
 	Director::getInstance()->replaceScene(TransitionFade::create(1, MainMenu::createScene(), Color3B(255, 255, 255)));
 
     #if (CC_TARGET_PLATFORM == CC_PLATFORM_IOS)

@@ -3,55 +3,69 @@
 #define __COMPONENTS_H__
 
 #include "cocos2d.h"
-//All game objects
+
 class GameObject: public cocos2d::Sprite
 {
 public:
 
-	//GameObject(std::string fileName,cocos2d::Scene* scene,int id);
 	GameObject(std::string fileName, int id);
-	virtual void Init(cocos2d::Vec2 startPos, float startRotation, float scale);
+	virtual void init(cocos2d::Vec2 startPos, float startRotation, float scale);
 
-	virtual void Run(float);
-	virtual void Activate();
-	virtual void DeActivate();
-	//
+	virtual void activate();
+	virtual void deActivate();
+	virtual void die();
+	virtual void goAway();
 
-	bool active;
-	int id;
+	bool isActive()
+	{
+		return active;
+	}
+	bool isColliding()
+	{
+		return colliding;
+	}
+
+protected:
+	virtual void update(float delta);
+
+private:
+	bool active=false;
+	bool colliding = false;
+	int id=0;
 };
 
-///Basic moving
+
 class Moving
 {
 public:
-
-	cocos2d::Vec2 initialPos;
-	cocos2d::Vec2 maxPos;
 	
-	GameObject* movingSprite;
-
-	virtual float LookTo(const cocos2d::Vec2& point);
-	void SetNewPos(cocos2d::Vec2 position, float rotation, int speed);
-	void Move(float deltaTime);
-	bool CheckOutScreen();
+	virtual float lookTo(const cocos2d::Vec2& point);
+	void setNewPos(cocos2d::Vec2 position, float rotation, int speed);
 
 	float getCurrentRotation()
 	{
 		return currentRotation;
 	}
-
 	void setCurrentRotation(float rotation)
 	{
 		currentRotation = rotation;
 		movingSprite->setRotation(currentRotation+ initialRotation);
 	}
+	
+
+protected:
+
+	GameObject* movingSprite;
+	cocos2d::Vec2 initialPos;
+	cocos2d::Vec2 maxPos;
 
 	void setCurrentRotationToRadians()
 	{
 		currentRotation = currentRotation / 180 * M_PI;
 	}
-
+	void move(float deltaTime);
+	bool checkOutScreen();
+	
 private:
 	float initialRotation=180;
 	float currentRotation=0;
@@ -60,34 +74,21 @@ private:
 
 };
 
-//Basic animating
+
 class Animating
-{
-public:
-	float counter;
+{	
+protected:
 
-	GameObject * animatingSprite;
-	
-	virtual void TestAnimateAction(float animMultiplyScale, float animScalePeriod);
-
-	virtual void Animate(float deltaTime);
-
-	virtual void AnimateScale(float currentScale, float animIncrementScale, float animScalePeriod);
-	virtual void AnimateSprite(std::string defaultSprite, std::string nextSprite, float duration);
-	//virtual void Run(float deltaTime) {};
+	virtual void testAnimateAction(cocos2d::Sprite* sprite,float animMultiplyScale, float animScalePeriod);
+	virtual void spriteBlinkAnim(cocos2d::Sprite* sprite, float blinkTime);
+	virtual void fishDie(GameObject* fish,float duration);
 
 private:
-	std::string defaultSprite;
 
 	float currentScale;
-	float animIncrementScale;
-	float animScalePeriod;
-
 	float setAnimSpriteTime;
 
-	bool animScale=false;
-	bool animSprite=false;
-	void RunAnimateScale();
+
 };
 
 
@@ -100,15 +101,17 @@ struct PoolHolderNode
 class PoolHolder
 {
 public:
-	PoolHolderNode* node;
 
-	PoolHolderNode* FirstNode;
-	PoolHolderNode* LastNode;
+	PoolHolderNode* firstNode;
+	PoolHolderNode* lastNode;
 
 	PoolHolder(GameObject* fisrtGameObject);
-	void Push(GameObject* gameObject);
-	void RunObjects(float deltaTime);
-	GameObject* GetFreeGameObject();
+	void push(GameObject* gameObject);
+	
+	GameObject* getFreeGameObject();
+
+private:
+	PoolHolderNode* node;
 };
 
 #endif 

@@ -27,15 +27,12 @@ bool MainMenu::init()
         return false;
     }
 
-    auto visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
-	MenuSetup();
+	menuSetup();
 
     return true;
 }
 
-void MainMenu::MenuSetup() {
+void MainMenu::menuSetup() {
 	auto director = cocos2d::Director::getInstance();
 	auto width = cocos2d::Size(director->getOpenGLView()->getFrameSize()).width;
 	auto height = cocos2d::Size(director->getOpenGLView()->getFrameSize()).height;
@@ -68,7 +65,7 @@ void MainMenu::MenuSetup() {
 	auto gameItem = MenuItemImage::create(
 		"buttonRed.png",
 		"buttonRedPressed.png",
-		CC_CALLBACK_1(MainMenu::GotoGameScene, this));
+		CC_CALLBACK_1(MainMenu::gotoGameScene, this));
 
 	if (closeItem == nullptr ||
 		closeItem->getContentSize().width <= 0 ||
@@ -132,7 +129,7 @@ void MainMenu::MenuSetup() {
 
 }
 
-void MainMenu::GotoGameScene(Ref* pSender) {
+void MainMenu::gotoGameScene(Ref* pSender) {
 	auto sceneGame = GameScene::createScene();
 	Director::getInstance()->replaceScene(sceneGame);
 }

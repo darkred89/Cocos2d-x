@@ -27,9 +27,7 @@
 
 
 #define FISH_SPAWN_DELAY 2
-#define FISH_SPAWN_COUNTER_INCREASE 3
-#define FISH_COUNT 100
-#define BUBBLE_COUNT 100
+#define FISH_SPAWN_COUNTER_INCREASE 30
 
 
 #include "Fish.h"
@@ -60,16 +58,16 @@ public:
 	static float graphicsScale;
 	static cocos2d::Vec2 maxCoord;
 
-	GameController(cocos2d::Node* _scene, float scale);
+	GameController(cocos2d::Node* playNode, float scale);
 
-	void Run(float deltaTime);
+	//void Run(float deltaTime);
 
-	void SpawnFish();
-	void SpawnEnemyFish();
-	void SpawnBubble();
+	void spawnFish();
+	void spawnEnemyFish();
+	void spawnBubble();
 
-	void SetTouch(cocos2d::Vec2 touchPos);
-	void TouchEnded();
+	void setTouch(cocos2d::Vec2 touchPos);
+	void touchEnded();
 	
 	void update(float);
 
@@ -84,17 +82,15 @@ public:
 	PoolHolderNode* enemyFishNode;
 
 private:
-	void TurnPlayerFish(cocos2d::Vec2 lookPos);
-	bool CollisionDetection(cocos2d::Sprite*, cocos2d::Sprite*);	
+	void turnPlayerFish(cocos2d::Vec2 lookPos);
+	bool collisionDetection(cocos2d::Sprite*, cocos2d::Sprite*);	
 
-	void CheckTouch();
-	bool CheckFishCollide(GameObject* gameObject, bool deactivateFish);
-	void CheckBubbleCollide();
-	bool CheckEnemyFishTouched(cocos2d::Vec2 touchPos);
+	void checkTouch();
+	bool checkFishCollide(GameObject* gameObject, bool deactivateFish);
+	void checkBubbleCollide();
+	bool checkEnemyFishTouched(cocos2d::Vec2 touchPos);
 
-	void RunBubbles(float deltaTime);
-	void RunEnemyFishes(float deltaTime);
-	void SpawnDecide(float deltaTime);
+	void spawnDecide(float deltaTime);
 
 	float fireCounter;
 	bool canFire;
@@ -102,7 +98,7 @@ private:
 
 	cocos2d::Vec2 touchPos;
 
-	cocos2d::Node* scene;
+	cocos2d::Node* playNode;
 };
 
 #endif

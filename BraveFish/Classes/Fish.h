@@ -10,21 +10,25 @@ class Fish :public GameObject, public Moving,public Animating
 {
 public:
 
-	cocos2d::Sprite* sprite;
+	//cocos2d::Sprite* sprite;
 	Fish(std::string defaultSpriteImege, int id);
 
-	virtual void Run(float deltaTime);
+	//virtual void run(float deltaTime);	
+	virtual void init(const cocos2d::Vec2& startPos, float startRotation, float scale);
+	void turn(float rotation);
+	void fireBubble();
 	
-	virtual void Init(const cocos2d::Vec2& startPos, float startRotation, float scale);
-	void Turn(float rotation);
-	void update(float);
 
-	float lookToRotation=0;
-	float deltaRotation=0;
 private:
 
+	cocos2d::Sprite* fishFireSprite;
+	float lookToRotation = 0;
+	float deltaRotation = 0;
+	float ñheckAngleOutOfBounds(float angle);
 	bool turning;
-	float CheckAngleOuntOfBounds(float angle);
+
+	virtual void update(float delta) override;
+	
 };
 
 #endif

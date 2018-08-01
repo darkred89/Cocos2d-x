@@ -14,8 +14,8 @@ public:
     // a selector callback
     void menuCloseCallback(cocos2d::Ref* pSender);
     
-	void MenuSetup();
-	void GotoGameScene(Ref* pSender);
+	void menuSetup();
+	void gotoGameScene(Ref* pSender);
 
     // implement the "static create()" method manually
     CREATE_FUNC(MainMenu);

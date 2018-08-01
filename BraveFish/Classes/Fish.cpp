@@ -8,34 +8,45 @@ USING_NS_CC;
 
 Fish::Fish(std::string defaultSpriteImege, int id):GameObject::GameObject(defaultSpriteImege, id)
 {
+	
 
 }
 
-void Fish::Init(const cocos2d::Vec2& startPos, float startRotation, float scale)
+void Fish::init(const cocos2d::Vec2& startPos, float startRotation, float scale)
 {
-	GameObject::Init(startPos, startRotation, scale);
+	GameObject::init(startPos, startRotation, scale);
 	movingSprite = this;
-	SetNewPos(startPos, 0, 0);
-	animatingSprite = this;
-	counter = 0;
-	//currentRotation = 0;
+	setNewPos(startPos, 0, 0);
+	//animatingSprite = this;
 	setCurrentRotation(0);
 	lookToRotation = 0;
 	turning = false;
-	this->scheduleUpdate();
+	
+	fishFireSprite = Sprite::create(FISH_BUBBLE_IMAGE);
+	fishFireSprite->setAnchorPoint(Vec2(0, 0));
+	fishFireSprite->setRotation(startRotation);
+	this->addChild(fishFireSprite);
+	fishFireSprite->setPosition(Vec2(0, 0));
+	fishFireSprite->setOpacity(0);
+
 }
 
-void Fish::Turn(float rotation) 
+void Fish::fireBubble()
+{
+	spriteBlinkAnim(fishFireSprite, FISH_FIREANIM_TIME);
+}
+
+void Fish::turn(float rotation) 
 {
 	lookToRotation = rotation;
 
-	lookToRotation= CheckAngleOuntOfBounds(lookToRotation);
+	lookToRotation= ñheckAngleOutOfBounds(lookToRotation);
 
 	float clockR = lookToRotation - getCurrentRotation();
 	float aClockR = getCurrentRotation() + (360 - lookToRotation);
 
-	clockR=CheckAngleOuntOfBounds(clockR);
-	aClockR=CheckAngleOuntOfBounds(aClockR);
+	clockR=ñheckAngleOutOfBounds(clockR);
+	aClockR=ñheckAngleOutOfBounds(aClockR);
 
 	//log("fish current rotation %f", getCurrentRotation());
 	//log("fish look rotation %f", lookToRotation);
@@ -55,33 +66,25 @@ void Fish::Turn(float rotation)
 
 void Fish::update(float delta)
 {
-	log("fish update");
-}
+	GameObject::update(delta);
+	//animate(delta);
 
-
-void Fish::Run(float deltaTime)
-{
-	Animate(deltaTime);
-	
 	if (!turning) return;
 
-	setCurrentRotation(CheckAngleOuntOfBounds(getCurrentRotation()));
+	setCurrentRotation(ñheckAngleOutOfBounds(getCurrentRotation()));
 
-	if (abs(getCurrentRotation() - lookToRotation) < FISH_TURN_RATE*deltaTime)
+	if (abs(getCurrentRotation() - lookToRotation) < FISH_TURN_RATE*delta)
 	{
 		setCurrentRotation(lookToRotation);
 		turning = false;
 	}
 	else
 	{
-		//getCurrentRotation() += deltaRotation*deltaTime;
-		setCurrentRotation(getCurrentRotation() + deltaRotation*deltaTime);
+		setCurrentRotation(getCurrentRotation() + deltaRotation*delta);
 	}
-
-	//setRotation(currentRotation);
 }
 
-float Fish::CheckAngleOuntOfBounds(float angle)
+float Fish::ñheckAngleOutOfBounds(float angle)
 {
 	if (angle < 0)
 	{

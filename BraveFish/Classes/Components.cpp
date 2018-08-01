@@ -5,63 +5,67 @@
 
 USING_NS_CC;
 
-#pragma region GameObject
 
 GameObject::GameObject(std::string fileName,int id)
 {
 	this->id = id;
-	//this->initWithSpriteFrameName(fileName);
-	//this = dynamic_cast<GameObject*>(Sprite::create(fileName));
-	this->init();
+	Sprite::init();
 	this->setTexture(fileName);
-	//this->setPosition
-	//scene->addChild(this, 1);
 }
 
-void GameObject::Init(cocos2d::Vec2 startPos, float startRotation, float scale)
+void GameObject::init(cocos2d::Vec2 startPos, float startRotation, float scale)
 {
 	this->setPosition(startPos);
 	this->setScale(scale);
-	this->setRotation(startRotation);
+	this->setRotation(startRotation);	
 }
 
-void GameObject::Run(float deltaTime) {}
-void GameObject::Activate()
+void GameObject::update(float delta)
 {
+
+}
+
+void GameObject::activate()
+{
+	colliding = true;
 	active = true;
+	this->scheduleUpdate();
 }
 
-void GameObject::DeActivate()
+void GameObject::deActivate()
 {
+	this->unscheduleUpdate();
 	stopAllActions();
 	active = false;
+	colliding = false;
 }
 
-#pragma endregion
+void GameObject::die()
+{
+	colliding = false;
+	this->unscheduleUpdate();
+	//active = false;
+}
 
-#pragma region Moving
+void GameObject::goAway()
+{
 
-float Moving::LookTo(const cocos2d::Vec2& point)
+}
+
+float Moving::lookTo(const cocos2d::Vec2& point)
 {
 	if (movingSprite == NULL) {
 		log("missing movingSprite to move");
 		return 0;
 	}
 
-	float x = point.x - movingSprite->getPosition().x;// - sprite->getContentSize().width;
-	float y = point.y - movingSprite->getPosition().y;// -sprite->getContentSize().width;
-
-	//currentRotation = atan2(x, y) * 180 / M_PI;
+	float x = point.x - movingSprite->getPosition().x;
+	float y = point.y - movingSprite->getPosition().y;
 
 	return atan2(x, y) * 180 / M_PI;
-	//log("current rotation: %f", currentRotation);
-
-	//movingSprite->setRotation(currentRotation + 180);
-
-	//currentRotation = currentRotation / 180 * M_PI; // to radians
 }
 
-void Moving::SetNewPos(cocos2d::Vec2 position, float rotation, int speed) 
+void Moving::setNewPos(cocos2d::Vec2 position, float rotation, int speed) 
 {
 	currentRotation = rotation * 180 / M_PI;;
 
@@ -73,12 +77,12 @@ void Moving::SetNewPos(cocos2d::Vec2 position, float rotation, int speed)
 	movingSpeed = speed;
 }
 
-void Moving::Move(float deltaTime) 
+void Moving::move(float deltaTime) 
 {
 	movingSprite->setPosition(Vec2(movingSprite->getPosition().x + movingSpeed * deltaTime*sin(currentRotation), movingSprite->getPosition().y + movingSpeed * deltaTime*cos(currentRotation)));
 }
 
-bool Moving::CheckOutScreen() 
+bool Moving::checkOutScreen() 
 {
 	Vec2 currentPos = movingSprite->getPosition();
 	if (currentPos.x > maxPos.x + MAX_POS_THRESHOLD || currentPos.x<-MAX_POS_THRESHOLD || currentPos.y > maxPos.y + MAX_POS_THRESHOLD || currentPos.y < -MAX_POS_THRESHOLD) 
@@ -91,19 +95,7 @@ bool Moving::CheckOutScreen()
 	}
 }
 
-#pragma endregion
-
-#pragma region Animating
-
-void Animating::AnimateScale(float currentScale, float animIncrementScale, float animScalePeriod)
-{
-	animScale = true;
-	this->animScalePeriod =  2* M_PI / animScalePeriod;
-	this->currentScale = currentScale;
-	this->animIncrementScale = animIncrementScale;
-}
-
-void Animating::TestAnimateAction(float animMultiplyScale, float animScalePeriod)
+void Animating::testAnimateAction(Sprite* sprite, float animMultiplyScale, float animScalePeriod)
 {
 	auto animAction = ScaleBy::create(animScalePeriod/2, animMultiplyScale);
 	auto move_ease_in = EaseInOut::create(animAction->clone(),2);
@@ -113,51 +105,44 @@ void Animating::TestAnimateAction(float animMultiplyScale, float animScalePeriod
 	auto seq = Sequence::create(move_ease_in, move_ease_out, nullptr);
 	auto repeatForever = cocos2d::RepeatForever::create(seq);
 
-	animatingSprite->runAction(repeatForever);
+	sprite->runAction(repeatForever);
 }
 
-void Animating::RunAnimateScale()
-{	
-	animatingSprite->setScale(animIncrementScale*(1 - sin(animScalePeriod*counter)) + currentScale);
-	//log("bubble scale %f",animatingSprite->getScale());
-}
-
-void Animating::Animate(float deltaTime)
+void Animating::spriteBlinkAnim(Sprite* sprite, float blinkTime)
 {
-	counter += deltaTime;
-	if(animScale) RunAnimateScale();
+	auto blinkIn = FadeIn::create(0);
+	auto blinkOut = FadeOut::create(0);
+	auto delayT = DelayTime::create(blinkTime);
 
-	if (animSprite)
-	{
-		if (counter > setAnimSpriteTime)
-		{
-			animatingSprite->setTexture(defaultSprite);
-			animSprite = false;
-		}
-	}
+	auto seq = Sequence::create( blinkIn, delayT, blinkOut, nullptr);
+
+	sprite->runAction(seq);
 }
 
-void Animating::AnimateSprite(std::string defaultSprite,std::string nextSprite, float duration)
+void Animating::fishDie(GameObject* fish, float duration)
 {
-	if (animSprite) return;
+	auto colorChange = TintTo::create(duration / 2, 50, 50, 50);
+	auto fadeOut= FadeOut::create(duration);
 
-	this->defaultSprite = defaultSprite;
-	animSprite = true;
-	setAnimSpriteTime = counter+ duration;
-	animatingSprite->setTexture(nextSprite);
+	auto deactivate = CallFunc::create([fish]() {fish->deActivate(); });
+
+	auto colorBack= TintTo::create(0, 255, 255, 255);
+	auto fadeIn= FadeIn::create(0);
+
+	auto seq = Sequence::create(fadeOut,deactivate,colorBack, fadeIn, deactivate, nullptr);
+
+	fish->runAction(colorChange);
+	fish->runAction(seq);
 }
 
-#pragma endregion
-
-#pragma region Pool
-void PoolHolder::Push(GameObject* gameObject)
+void PoolHolder::push(GameObject* gameObject)
 {
 	node = new PoolHolderNode();
 	node->gameObject = gameObject;
 	node->nextNode = NULL;
 
-	LastNode->nextNode = node;
-	LastNode = node;
+	lastNode->nextNode = node;
+	lastNode = node;
 }
 
 PoolHolder::PoolHolder(GameObject* fisrtGameObject)
@@ -166,18 +151,18 @@ PoolHolder::PoolHolder(GameObject* fisrtGameObject)
 	node->gameObject = fisrtGameObject;
 	node->nextNode = NULL;
 
-	FirstNode = node;
-	LastNode = node;
+	firstNode = node;
+	lastNode = node;
 }
 
-GameObject* PoolHolder::GetFreeGameObject()
+GameObject* PoolHolder::getFreeGameObject()
 {
 	bool gotGameObject = false;
-	PoolHolderNode* currentNode = FirstNode;
+	PoolHolderNode* currentNode = firstNode;
 
 	while (!gotGameObject)
 	{
-		if (!currentNode->gameObject->active)
+		if (!currentNode->gameObject->isActive())
 		{
 			gotGameObject = true;
 			return(currentNode->gameObject);
@@ -194,25 +179,6 @@ GameObject* PoolHolder::GetFreeGameObject()
 	}
 }
 
-void PoolHolder::RunObjects(float deltaTime)
-{
-	bool runObjects = true;
-	PoolHolderNode* currentNode = FirstNode;
-	while (runObjects)
-	{
-		if (currentNode->gameObject->active) currentNode->gameObject->Run(deltaTime);
-		if (currentNode->nextNode == NULL)
-		{
-			runObjects = false;
-		}
-		else
-		{
-			currentNode = currentNode->nextNode;
-		}
-	}
-}
-
-#pragma endregion
 
 
 
