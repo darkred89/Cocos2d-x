@@ -6,9 +6,8 @@
 USING_NS_CC;
 
 
-Fish::Fish(std::string defaultSpriteImege, int id):GameObject::GameObject(defaultSpriteImege, id)
+Fish::Fish(const std::string& defaultSpriteImege, int id):GameObject::GameObject(defaultSpriteImege, id)
 {
-	
 
 }
 
@@ -17,7 +16,6 @@ void Fish::init(const cocos2d::Vec2& startPos, float startRotation, float scale)
 	GameObject::init(startPos, startRotation, scale);
 	movingSprite = this;
 	setNewPos(startPos, 0, 0);
-	//animatingSprite = this;
 	setCurrentRotation(0);
 	lookToRotation = 0;
 	turning = false;
@@ -31,6 +29,12 @@ void Fish::init(const cocos2d::Vec2& startPos, float startRotation, float scale)
 
 }
 
+void Fish::die()
+{
+	GameObject::die();
+	fishDie(this, 3);
+}
+
 void Fish::fireBubble()
 {
 	spriteBlinkAnim(fishFireSprite, FISH_FIREANIM_TIME);
@@ -40,13 +44,13 @@ void Fish::turn(float rotation)
 {
 	lookToRotation = rotation;
 
-	lookToRotation= ñheckAngleOutOfBounds(lookToRotation);
+	lookToRotation= checkAngle(lookToRotation);
 
 	float clockR = lookToRotation - getCurrentRotation();
 	float aClockR = getCurrentRotation() + (360 - lookToRotation);
 
-	clockR=ñheckAngleOutOfBounds(clockR);
-	aClockR=ñheckAngleOutOfBounds(aClockR);
+	clockR= checkAngle(clockR);
+	aClockR= checkAngle(aClockR);
 
 	//log("fish current rotation %f", getCurrentRotation());
 	//log("fish look rotation %f", lookToRotation);
@@ -67,11 +71,10 @@ void Fish::turn(float rotation)
 void Fish::update(float delta)
 {
 	GameObject::update(delta);
-	//animate(delta);
 
 	if (!turning) return;
 
-	setCurrentRotation(ñheckAngleOutOfBounds(getCurrentRotation()));
+	setCurrentRotation(checkAngle(getCurrentRotation()));
 
 	if (abs(getCurrentRotation() - lookToRotation) < FISH_TURN_RATE*delta)
 	{
@@ -84,7 +87,7 @@ void Fish::update(float delta)
 	}
 }
 
-float Fish::ñheckAngleOutOfBounds(float angle)
+float Fish::checkAngle(float angle)
 {
 	if (angle < 0)
 	{

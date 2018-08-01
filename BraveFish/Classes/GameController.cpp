@@ -105,7 +105,7 @@ void GameController::spawnEnemyFish()
 	}
 }
 
-void GameController::setTouch(Vec2 touchPos)
+void GameController::setTouch(const Vec2& touchPos)
 {	
 	touching = true;
 	turnPlayerFish(touchPos);
@@ -121,15 +121,14 @@ void GameController::checkTouch()
 {
 	if (!checkEnemyFishTouched(touchPos)) return;	
 	spawnBubble();	
-	
 }
 
-void GameController::turnPlayerFish(Vec2 lookPos)
+void GameController::turnPlayerFish(const Vec2& lookPos)
 {
 	playerFish->turn(playerFish->lookTo(lookPos));
 }
 
-bool GameController::checkEnemyFishTouched(Vec2 touchPos)
+bool GameController::checkEnemyFishTouched(const Vec2& touchPos)
 {
 	target->setPosition(touchPos);
 
@@ -146,7 +145,6 @@ void GameController::spawnBubble()
 
 	if (playerFish->isActive())
 	{
-		//playerFish->animateSprite(FISH_IMAGE, FISH_BUBBLE_IMAGE, FISH_FIREANIM_TIME);
 		playerFish->fireBubble();
 	}
 
@@ -176,7 +174,7 @@ void GameController::update(float delta)
 
 	if (checkFishCollide(playerFish, false))
 	{
-		playerFish->deActivate();
+		playerFish->die();
 		GameScene::gameOverFlag = true;
 	}
 

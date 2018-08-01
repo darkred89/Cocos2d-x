@@ -8,12 +8,12 @@
 
 USING_NS_CC;
 
-EnemyFish::EnemyFish(std::string fileName, int id):GameObject::GameObject(fileName, id)
+EnemyFish::EnemyFish(const std::string& fileName, int id):GameObject::GameObject(fileName, id)
 {
 	
 }
 
-void EnemyFish::init(cocos2d::Vec2 startPos, float startRotation, float scale)
+void EnemyFish::init(const cocos2d::Vec2& startPos, float startRotation, float scale)
 {
 	GameObject::init(startPos, startRotation, scale);
 	movingSprite = this;
@@ -35,11 +35,6 @@ void EnemyFish::deActivate()
 	setNewPos(initialPos, 0, 0);
 	lookTo(target);
 	
-}
-
-void EnemyFish::goAway()
-{
-	setNewPos(initialPos, 0, 0);
 }
 
 void EnemyFish::die()

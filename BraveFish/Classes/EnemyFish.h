@@ -11,13 +11,12 @@ class EnemyFish:public GameObject, public Moving, public Animating
 {
 public:
 
-	EnemyFish(std::string fileName, int id);
+	EnemyFish(const std::string& fileName, int id);
 	
-	virtual void init(cocos2d::Vec2 startPos, float startRotation, float scale) override;
+	virtual void init(const cocos2d::Vec2& startPos, float startRotation, float scale) override;
 	virtual void die() override;
 	virtual void activate() override;
 	virtual void deActivate() override;
-	virtual void goAway() override;
 
 	void setTarget(cocos2d::Vec2);
 	

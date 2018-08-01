@@ -8,13 +8,12 @@ class GameObject: public cocos2d::Sprite
 {
 public:
 
-	GameObject(std::string fileName, int id);
-	virtual void init(cocos2d::Vec2 startPos, float startRotation, float scale);
+	GameObject(const std::string& fileName, int id);
+	virtual void init(const cocos2d::Vec2& startPos, float startRotation, float scale);
 
 	virtual void activate();
 	virtual void deActivate();
 	virtual void die();
-	virtual void goAway();
 
 	bool isActive()
 	{
@@ -40,7 +39,7 @@ class Moving
 public:
 	
 	virtual float lookTo(const cocos2d::Vec2& point);
-	void setNewPos(cocos2d::Vec2 position, float rotation, int speed);
+	void setNewPos(const cocos2d::Vec2& position, float rotation, int speed);
 
 	float getCurrentRotation()
 	{
@@ -50,8 +49,7 @@ public:
 	{
 		currentRotation = rotation;
 		movingSprite->setRotation(currentRotation+ initialRotation);
-	}
-	
+	}	
 
 protected:
 
@@ -67,6 +65,7 @@ protected:
 	bool checkOutScreen();
 	
 private:
+
 	float initialRotation=180;
 	float currentRotation=0;
 	float movingSpeed=0;
@@ -87,7 +86,6 @@ private:
 
 	float currentScale;
 	float setAnimSpriteTime;
-
 
 };
 

@@ -10,8 +10,8 @@ class Bubble:public GameObject, public Moving, public Animating
 public:
 
 	cocos2d::Sprite* sprite;
-	Bubble(std::string fileName, int id);
-	virtual void init(cocos2d::Vec2 startPos, float startRotation, cocos2d::Vec2 maxPosition, float scale, GameObject* playerFish);
+	Bubble(const std::string& fileName, int id);
+	virtual void init(const cocos2d::Vec2& startPos, float startRotation, const cocos2d::Vec2& maxPosition, float scale, GameObject* playerFish);
 
 	virtual void activate();
 	virtual void deActivate();

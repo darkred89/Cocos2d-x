@@ -6,14 +6,14 @@
 USING_NS_CC;
 
 
-GameObject::GameObject(std::string fileName,int id)
+GameObject::GameObject(const std::string& fileName,int id)
 {
 	this->id = id;
 	Sprite::init();
 	this->setTexture(fileName);
 }
 
-void GameObject::init(cocos2d::Vec2 startPos, float startRotation, float scale)
+void GameObject::init(const cocos2d::Vec2& startPos, float startRotation, float scale)
 {
 	this->setPosition(startPos);
 	this->setScale(scale);
@@ -44,12 +44,6 @@ void GameObject::die()
 {
 	colliding = false;
 	this->unscheduleUpdate();
-	//active = false;
-}
-
-void GameObject::goAway()
-{
-
 }
 
 float Moving::lookTo(const cocos2d::Vec2& point)
@@ -65,7 +59,7 @@ float Moving::lookTo(const cocos2d::Vec2& point)
 	return atan2(x, y) * 180 / M_PI;
 }
 
-void Moving::setNewPos(cocos2d::Vec2 position, float rotation, int speed) 
+void Moving::setNewPos(const cocos2d::Vec2& position, float rotation, int speed) 
 {
 	currentRotation = rotation * 180 / M_PI;;
 
